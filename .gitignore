@@ -1,0 +1,50 @@
+# Dependencias de Node.js
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Directorios de compilación
+dist/
+build/
+
+# Configuración de entorno
+.env
+.env.* # Para archivos como .env.development, .env.production, etc.
+
+# Directorios de caché y logs
+.cache/
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos temporales
+*.swp
+*.swo
+*.tmp
+*.bak
+*.orig
+
+# Archivos específicos de herramientas
+.idea/
+.vscode/
+*.iml
+.eslintcache
+.nyc_output/
+
+# Archivos de pruebas
+coverage/
+
+# Configuración del depurador
+*.pid
+*.pid.lock
+
+# Configuración del CLI de NestJS
+.nest-cli.json
+

@@ -17,9 +17,9 @@ export class User extends BaseUser {
 
   @Column({
     type: 'enum',
-    enum: ['lose weight', 'maintain weight', 'gain weight'],
+    enum: ['weight_loss', 'weight_maintain', 'weight_gain'],
   })
-  aim: 'lose weight' | 'maintain weight' | 'gain weight';
+  aim: 'weight_loss' | 'weight_maintain' | 'weight_gain';
 
   @Column({ type: 'int' })
   calorie_goal: number;
