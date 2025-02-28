@@ -1,15 +1,17 @@
+import { AdminModule } from './user/admin.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { DishModule } from './dish/dish.module';
 import { MealModule } from './meal/meal.module';
-import { BaseUserModule } from './baseUser/baseUser.module';
+import { User } from './user/user.entity';
+import { BaseUser } from './user/baseUser.entity';
+import { Admin } from './user/admin.entity';
 
 @Module({
   imports: [
+    AdminModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -20,15 +22,12 @@ import { BaseUserModule } from './baseUser/baseUser.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [],
+      entities: [Admin, BaseUser],
       synchronize: true,
+      logging: true,
     }),
-    AuthModule,
-    DishModule,
-    MealModule,
-    BaseUserModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
-export class AppModule { }
+export class AppModule {}

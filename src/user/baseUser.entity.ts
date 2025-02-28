@@ -3,11 +3,15 @@ import {
   Column,
   PrimaryGeneratedColumn,
   TableInheritance,
+  PrimaryColumn,
+  Unique,
 } from 'typeorm';
 
 @Entity()
 @TableInheritance({ column: { type: 'varchar', name: 'type' } })
-export class BaseUser {
+@Unique(['username'])
+@Unique(['email'])
+export abstract class BaseUser {
   @PrimaryGeneratedColumn()
   id: number;
 

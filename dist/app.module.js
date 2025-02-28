@@ -7,21 +7,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
+const admin_module_1 = require("./user/admin.module");
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
-const app_controller_1 = require("./app.controller");
-const app_service_1 = require("./app.service");
-const auth_module_1 = require("./auth/auth.module");
-const user_module_1 = require("./user/user.module");
-const dish_module_1 = require("./dish/dish.module");
-const meal_module_1 = require("./meal/meal.module");
+const baseUser_entity_1 = require("./user/baseUser.entity");
+const admin_entity_1 = require("./user/admin.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            admin_module_1.AdminModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
             }),
@@ -32,16 +30,13 @@ exports.AppModule = AppModule = __decorate([
                 username: process.env.DATABASE_USER,
                 password: process.env.DATABASE_PASSWORD,
                 database: process.env.DATABASE_NAME,
-                entities: [],
+                entities: [admin_entity_1.Admin, baseUser_entity_1.BaseUser],
                 synchronize: true,
+                logging: true,
             }),
-            auth_module_1.AuthModule,
-            user_module_1.UserModule,
-            dish_module_1.DishModule,
-            meal_module_1.MealModule,
         ],
-        controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        controllers: [],
+        providers: [],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map
