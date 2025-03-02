@@ -26,6 +26,16 @@ export class AdminService {
       return admin;
     }
 
+    //Devuelve un administrado por su email
+    async findOneByEmail(email: string): Promise<Admin> {
+      const admin = await this.adminRepository.findOne({ where: { email }});
+      if
+      (!admin) {
+        throw new NotFoundException(`Admin with email ${email} not found`);
+      }
+      return admin
+    }
+
   //Filtra administradores por algun atributo
   async filterAdmins(filters: Partial<Admin>): Promise<Admin[]> {
     const queryBuilder = this.adminRepository.createQueryBuilder('admin');
@@ -41,8 +51,6 @@ export class AdminService {
     return await queryBuilder.getMany();
   }
 
-
-  
   //Crea un administrador
   async create(adminData: Partial<Admin>): Promise<Admin> {
     const admin = this.adminRepository.create(adminData);
@@ -50,7 +58,19 @@ export class AdminService {
     return admin;
   }
  
+  //Actualiza un administrador de uno o mas atributos
+  async update(id: number, adminData: Partial<Admin>): Promise<Admin> {
+    const admin = await this.findOneById(id);
+    await this.adminRepository.update(id, adminData);
+    return admin;
+  }
 
+  //Elimina un administrador
+  async remove(id: number): Promise<Admin> {
+    const admin = await this.findOneById(id);
+    await this.adminRepository.remove(admin);
+    return admin;
+  }
 }
 
 
