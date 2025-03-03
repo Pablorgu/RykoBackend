@@ -1,3 +1,4 @@
+import { UserModule } from './user/user.module';
 import { AdminModule } from './user/admin.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -11,6 +12,7 @@ import { Admin } from './user/admin.entity';
 
 @Module({
   imports: [
+    UserModule,
     AdminModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -22,7 +24,7 @@ import { Admin } from './user/admin.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Admin, BaseUser],
+      entities: [Admin, BaseUser, User],
       synchronize: true,
       logging: true,
     }),

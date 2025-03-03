@@ -1,24 +1,27 @@
 import { Entity, Column, ChildEntity, Unique,} from 'typeorm';
 import { BaseUser } from './baseUser.entity';
+import { Transform } from 'class-transformer';
+import { Matches } from 'class-validator';
 
 @ChildEntity('user')
 export class User extends BaseUser {
 
-  @Column({ type: 'float' })
-  weight: number;
+  @Column({ type: 'float',nullable: true })
+  weight?: number;
 
-  @Column({ type: 'int' })
-  height: number;
+  @Column({ type: 'int', nullable: true })
+  height?: number;
 
-  @Column({ type: 'date' })
-  birthdate: Date;
+  @Column({ type: 'varchar', nullable: true })
+  birthdate?: string
 
   @Column({
     type: 'enum',
     enum: ['weight_loss', 'weight_maintain', 'weight_gain'],
+    nullable : true
   })
-  aim: 'weight_loss' | 'weight_maintain' | 'weight_gain';
+  aim?: 'weight_loss' | 'weight_maintain' | 'weight_gain';
 
-  @Column({ type: 'int' })
-  calorie_goal: number;
+  @Column({ type: 'int', nullable: true })
+  calorie_goal?: number;
 }

@@ -17,43 +17,41 @@ export class AdminService {
   }
 
     //Devuelve un administrador por su id
-    async findOneById(id: number): Promise<Admin> {
-      const admin = await this.adminRepository.findOne({ where: { id }});
-      if
-      (!admin) {
-        throw new NotFoundException(`Admin with id ${id} not found`);
-      }
-      return admin;
+  async findOneById(id: number): Promise<Admin> {
+    const admin = await this.adminRepository.findOne({ where: { id }});
+    if(!admin) {
+      throw new NotFoundException(`Admin with id ${id} not found`);
     }
+    return admin;
+  }
 
     //Devuelve un administrado por su email
-    async findOneByEmail(email: string): Promise<Admin> {
-      const admin = await this.adminRepository.findOne({ where: { email }});
-      if
-      (!admin) {
-        throw new NotFoundException(`Admin with email ${email} not found`);
-      }
-      return admin
-    }
+  async findOneByEmail(email: string): Promise<Admin | null> {
+    const admin = await this.adminRepository.findOne({ where: { email }});
+    console.log("Este es el admin que tiene ya el email:",admin);
+    return admin
+  }
 
-  //Filtra administradores por algun atributo
+  //Filter admins by any attribute
   async filterAdmins(filters: Partial<Admin>): Promise<Admin[]> {
     const queryBuilder = this.adminRepository.createQueryBuilder('admin');
 
-    // Recorre las claves de los filtros y los añade a la consulta
+    // Iterates through the filter keys and adds them to the query.
     for (const [key, value] of Object.entries(filters)) {
       if (value) {
       queryBuilder.andWhere(`admin.${key} LIKE :${key}`, { [key]: `%${value}%` });
       }
     }
 
-    // Ejecuta la consulta
+    // Execute the query
     return await queryBuilder.getMany();
   }
 
   //Crea un administrador
   async create(adminData: Partial<Admin>): Promise<Admin> {
+    console.log("Este es el data del admin:",adminData);
     const admin = this.adminRepository.create(adminData);
+    console.log("Este es el admin:",admin);
     await this.adminRepository.save(admin);
     return admin;
   }
@@ -62,7 +60,7 @@ export class AdminService {
   async update(id: number, adminData: Partial<Admin>): Promise<Admin> {
     const admin = await this.findOneById(id);
     await this.adminRepository.update(id, adminData);
-    return admin;
+    return this.findOneById(id);
   }
 
   //Elimina un administrador

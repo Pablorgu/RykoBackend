@@ -17,57 +17,58 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  //Método para insertar un nuevo registro en la tabla User
-  async create(username: string, weight: number, height: number, birthdate: Date, aim: Aim, calorie_goal: number): Promise<User> {
-    const newUser = new User();
-    newUser.username = username;
-    newUser.weight = weight;
-    newUser.height = height;
-    newUser.birthdate = birthdate;
-    newUser.aim =  aim;
-    newUser.calorie_goal = calorie_goal;
-    
-    return this.userRepository.save(newUser);
-  }
-
-  //Método para obtener todos los registros de la tabla User
+  //Devuelve todos los usuarios existentes
   async findAll(): Promise<User[]> {
     return this.userRepository.find();
   }
 
-  //Método para obtener un usuario por su id
-  async findOne(username: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { username } });
+  //Find an User by its id
+  async findOneById(id: number): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      throw new Error(`User with id ${username} not found`);
+      throw new Error(`User with id ${id} not found`);
     }
     return user;
   }
+  //Obtiene un usuario por su email
+  async findOneByEmail(email: string): Promise<User | null> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    return user;
+  }
 
-  //Método para actualizar un usuario por su username
-  async update(username: string, weight: number, height: number, birthdate: Date, aim: Aim, calorie_goal: number): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { username } });
-    if (!user) {
-      throw new Error(`User with id ${username} not found`);
+  //Filter users by any attribute
+  async filterUsers(filters: Partial<User>): Promise<User[]> {
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+
+    // Iterates through the filter keys and adds them to the query.
+    for (const [key, value] of Object.entries(filters)) {
+      if (value) {
+        queryBuilder.andWhere(`user.${key} LIKE :${key}`, { [key]: `%${value}%` });
+      }
     }
-    user.weight = weight;
-    user.height = height;
-    user.birthdate = birthdate;
-    user.aim = aim;
-    user.calorie_goal = calorie_goal;
 
-    //tener en cuenta que no tengo por que modificar todos los campos pero aqui mando desde el form los que ya estan
-    return this.userRepository.save(user);
+    // Execute the query
+    return await queryBuilder.getMany();
+  }
+
+  //Crea un usuario
+  async create(userData: Partial<User>): Promise<User> {
+    const user = this.userRepository.create(userData);
+    await this.userRepository.save(user);
+    return user;
+  }
+
+  //Actualiza un usuario de uno o mas atributos
+  async update(id: number, userData: Partial<User>): Promise<User>{
+    const user = await this.findOneById(id);
+    await  this.userRepository.update(id, userData);
+    return this.findOneById(id);
   }
 
   //Método para eliminar un usuario por su id
-  async remove(username: string): Promise<String> {
-    const user = await this.userRepository.findOne({ where: { username } });
-    if (user) {
-      await this.userRepository.remove(user);
-      return 'Deleted succesfully';
-    }else{
-      throw new Error(`User with id ${username} not found`);
-    }
+  async remove(id:number): Promise<User> {
+    const user = await this.findOneById(id);
+    await this.userRepository.remove(user);
+    return user;  
   }
 }
