@@ -70,5 +70,3 @@ export class AdminService {
     return admin;
   }
 }
-
-

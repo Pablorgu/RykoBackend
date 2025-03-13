@@ -1,3 +1,6 @@
+import { FoodItemService } from './FoodItem/fooditem.service';
+import { FoodItemModule } from './FoodItem/fooditem.module';
+import { FoodItemController } from './FoodItem/fooditem.controller';
 import { UserModule } from './user/user.module';
 import { AdminModule } from './user/admin.module';
 import { Module } from '@nestjs/common';
@@ -9,9 +12,12 @@ import { MealModule } from './meal/meal.module';
 import { User } from './user/user.entity';
 import { BaseUser } from './user/baseUser.entity';
 import { Admin } from './user/admin.entity';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { FoodItem } from './FoodItem/foodItem.entity';
 
 @Module({
   imports: [
+    FoodItemModule,
     UserModule,
     AdminModule,
     ConfigModule.forRoot({
@@ -24,9 +30,10 @@ import { Admin } from './user/admin.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Admin, BaseUser, User],
+      entities: [Admin, BaseUser, User, FoodItem],
       synchronize: true,
       logging: true,
+      namingStrategy: new SnakeNamingStrategy(),
     }),
   ],
   controllers: [],

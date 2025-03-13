@@ -23,5 +23,5 @@ export class User extends BaseUser {
   aim?: 'weight_loss' | 'weight_maintain' | 'weight_gain';
 
   @Column({ type: 'int', nullable: true })
-  calorie_goal?: number;
+  calorieGoal?: number;
 }
