@@ -28,7 +28,6 @@ export class AdminService {
     //Devuelve un administrado por su email
   async findOneByEmail(email: string): Promise<Admin | null> {
     const admin = await this.adminRepository.findOne({ where: { email }});
-    console.log("Este es el admin que tiene ya el email:",admin);
     return admin
   }
 
@@ -49,9 +48,7 @@ export class AdminService {
 
   //Crea un administrador
   async create(adminData: Partial<Admin>): Promise<Admin> {
-    console.log("Este es el data del admin:",adminData);
     const admin = this.adminRepository.create(adminData);
-    console.log("Este es el admin:",admin);
     await this.adminRepository.save(admin);
     return admin;
   }
