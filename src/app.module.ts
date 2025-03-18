@@ -14,12 +14,14 @@ import { BaseUser } from './user/baseUser.entity';
 import { Admin } from './user/admin.entity';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { FoodItem } from './FoodItem/foodItem.entity';
+import { Dish } from './dish/dish.entity';
 
 @Module({
   imports: [
     FoodItemModule,
     UserModule,
     AdminModule,
+    DishModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -30,7 +32,7 @@ import { FoodItem } from './FoodItem/foodItem.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Admin, BaseUser, User, FoodItem],
+      entities: [Admin, BaseUser, User, FoodItem, Dish],
       synchronize: true,
       logging: true,
       namingStrategy: new SnakeNamingStrategy(),
