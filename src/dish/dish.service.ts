@@ -21,11 +21,31 @@ export class DishService {
         return this.dishRepository.findOne({ where: { id } });
     }
 
+    //Filter dishes by any attribute
+    async filterDishes(filters: Partial<Dish>): Promise<Dish[]> {
+        try {
+            const queryBuilder = this.dishRepository.createQueryBuilder('dish');
+    
+            // Itera sobre las claves de los filtros y las agrega dinámicamente a la consulta
+            for (const [key, value] of Object.entries(filters)) {
+                if (value) {
+                    queryBuilder.andWhere(`dish.${key} LIKE :${key}`, { [key]: `%${value}%` });
+                }
+            }
+    
+            // Ejecutar la consulta y devolver los resultados
+            return await queryBuilder.getMany();
+        } catch (error) {
+            console.error("Error filtering dishes:", error);
+            throw new Error("An error occurred while filtering dishes. Please try again later.");
+        }
+    }
+    
     //Create a dish
     async create(dishData: Partial<Dish>): Promise<Dish | null> {
         try {
             // Verificar si el plato ya existe (puedes cambiar esta lógica si es necesario)
-            const existingDish = await this.dishRepository.findOne({ where: { name: dishData.name } });
+            const existingDish = await this.dishRepository.findOne({ where: { name: dishData.name, UserId: dishData.UserId} });
     
             if (existingDish) {
                 throw new ConflictException(`Dish with name "${dishData.name}" already exists`);
