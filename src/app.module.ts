@@ -1,6 +1,9 @@
-import { FoodItemService } from './FoodItem/fooditem.service';
-import { FoodItemModule } from './FoodItem/fooditem.module';
-import { FoodItemController } from './FoodItem/fooditem.controller';
+import { DishFoodItemModule } from './dishFoodItem/dishfooditem.module';
+import { DishFoodItemService } from './dishFoodItem/dishfooditem.service';
+import { DishFoodItemController } from './dishFoodItem/dishfooditem.controller';
+import { FoodItemService } from './foodItem/fooditem.service';
+import { FoodItemModule } from './foodItem/fooditem.module';
+import { FoodItemController } from './foodItem/fooditem.controller';
 import { UserModule } from './user/user.module';
 import { AdminModule } from './user/admin.module';
 import { Module } from '@nestjs/common';
@@ -13,8 +16,9 @@ import { User } from './user/user.entity';
 import { BaseUser } from './user/baseUser.entity';
 import { Admin } from './user/admin.entity';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-import { FoodItem } from './FoodItem/foodItem.entity';
+import { FoodItem } from './foodItem/foodItem.entity';
 import { Dish } from './dish/dish.entity';
+import { DishFoodItem } from './dishFoodItem/dishFoodItem.entity';
 
 @Module({
   imports: [
@@ -22,6 +26,7 @@ import { Dish } from './dish/dish.entity';
     UserModule,
     AdminModule,
     DishModule,
+    DishFoodItemModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -32,7 +37,7 @@ import { Dish } from './dish/dish.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Admin, BaseUser, User, FoodItem, Dish],
+      entities: [Admin, BaseUser, User, FoodItem, Dish, DishFoodItem],
       synchronize: true,
       logging: true,
       namingStrategy: new SnakeNamingStrategy(),

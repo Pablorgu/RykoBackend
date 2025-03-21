@@ -16,4 +16,5 @@ export class Dish {
 
     @Column({type: 'int'})
     UserId: number;
+    dishFoodItems: any;
 }
