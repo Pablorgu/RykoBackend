@@ -95,4 +95,5 @@ export class FoodItem {
 
     @Column({ type: 'varchar', nullable: true })
     creator?: string;
+    dishFoodItems: any;
 }
