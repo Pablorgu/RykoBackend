@@ -19,6 +19,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { FoodItem } from './foodItem/foodItem.entity';
 import { Dish } from './dish/dish.entity';
 import { DishFoodItem } from './dishFoodItem/dishFoodItem.entity';
+import { Meal } from './meal/meal.entity';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { DishFoodItem } from './dishFoodItem/dishFoodItem.entity';
     AdminModule,
     DishModule,
     DishFoodItemModule,
+    MealModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -37,7 +39,7 @@ import { DishFoodItem } from './dishFoodItem/dishFoodItem.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Admin, BaseUser, User, FoodItem, Dish, DishFoodItem],
+      entities: [Admin, BaseUser, User, FoodItem, Dish, DishFoodItem, Meal],
       synchronize: true,
       logging: true,
       namingStrategy: new SnakeNamingStrategy(),
@@ -46,4 +48,4 @@ import { DishFoodItem } from './dishFoodItem/dishFoodItem.entity';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }
