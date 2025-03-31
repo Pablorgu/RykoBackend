@@ -10,7 +10,7 @@
   <li><strong>Visualización gráfica</strong> de la información nutricional, completamente adaptada a las necesidades del usuario.</li>
   <li><strong>Recomendaciones inteligentes</strong> basadas en los hábitos y preferencias del usuario para mejorar su nutrición.</li>
 </ul>
--------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
