@@ -1,16 +1,15 @@
-# Ryko - Backend API
+<h1>Ryko - Backend API</h1>
 
-## Descripción
+<h2>Descripción</h2>
+<p>Ryko es una aplicación de gestión nutricional integral la cual estoy desarrollando como Trabajo de Fin de Grado.</p>
 
-Ryko es una aplicación de gestión nutricional Integral la cual estoy desarrollando como Trabajo de Fin de Grado.
-
-## Características
-
--Inicio de sesión fácil mediante Google o correo electrónico.
--Gestión nutricional personalizada basada en los platos creados por el usuario.
--Visualización gráfica de la información nutricional, completamente adaptada a las necesidades del usuario.
--Recomendaciones inteligentes basadas en los hábitos y preferencias del usuario para mejorar su nutrición.
-
+<h2>Características</h2>
+<ul>
+  <li><strong>Inicio de sesión fácil</strong> mediante Google o correo electrónico.</li>
+  <li><strong>Gestión nutricional personalizada</strong> basada en los platos creados por el usuario.</li>
+  <li><strong>Visualización gráfica</strong> de la información nutricional, completamente adaptada a las necesidades del usuario.</li>
+  <li><strong>Recomendaciones inteligentes</strong> basadas en los hábitos y preferencias del usuario para mejorar su nutrición.</li>
+</ul>
 -------------------------------------------------------------------------------------------------------------
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
