@@ -1,14 +1,14 @@
 <h1>Ryko - Backend API</h1>
 
-<h2>Descripción</h2>
-<p>Ryko es una aplicación de gestión nutricional integral la cual estoy desarrollando como Trabajo de Fin de Grado.</p>
+<h2>Description</h2>
+<p>Ryko is a comprehensive nutrition management application that I am developing as my Bachelor's Thesis project.</p>
 
-<h2>Características</h2>
+<h2>Features</h2>
 <ul>
-  <li><strong>Inicio de sesión fácil</strong> mediante Google o correo electrónico.</li>
-  <li><strong>Gestión nutricional personalizada</strong> basada en los platos creados por el usuario.</li>
-  <li><strong>Visualización gráfica</strong> de la información nutricional, completamente adaptada a las necesidades del usuario.</li>
-  <li><strong>Recomendaciones inteligentes</strong> basadas en los hábitos y preferencias del usuario para mejorar su nutrición.</li>
+  <li><strong>Easy login</strong> via Google or email.</li>
+  <li><strong>Personalized nutrition management</strong> based on user-created dishes.</li>
+  <li><strong>Graphical visualization</strong> of nutritional information, fully tailored to the user's needs.</li>
+  <li><strong>Smart recommendations</strong> based on user habits and preferences to improve nutrition.</li>
 </ul>
 <hr>
 <p align="center">
