@@ -6,8 +6,9 @@ import { Meal } from './meal.entity';
 import { MealController } from './meal.controller';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Meal])],
-    controllers: [MealController],
-    providers: [MealService],
+  imports: [TypeOrmModule.forFeature([Meal])],
+  controllers: [MealController],
+  providers: [MealService],
+  exports: [MealService],
 })
-export class MealModule {}
+export class MealModule { }
