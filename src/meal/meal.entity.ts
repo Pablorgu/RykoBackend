@@ -11,4 +11,5 @@ export class Meal {
 
   @Column({ type: 'int' })
   MealTypeId: number;
+  dayMeals: any;
 }
