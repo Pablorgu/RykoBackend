@@ -24,6 +24,8 @@ import { DayModule } from './day/day.module';
 import { Day } from './day/day.entity';
 import { DayMealModule } from './dayMeal/dayMeal.module';
 import { DayMeal } from './dayMeal/dayMeal.entity';
+import { DayUser } from './dayUser/dayUser.entity';
+import { DayUserModule } from './dayUser/dayUser.module';
 
 @Module({
   imports: [
@@ -35,6 +37,7 @@ import { DayMeal } from './dayMeal/dayMeal.entity';
     MealModule,
     DayModule,
     DayMealModule,
+    DayUserModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -45,7 +48,7 @@ import { DayMeal } from './dayMeal/dayMeal.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Admin, BaseUser, User, FoodItem, Dish, DishFoodItem, Meal, Day, DayMeal],
+      entities: [Admin, BaseUser, User, FoodItem, Dish, DishFoodItem, Meal, Day, DayMeal, DayUser],
       synchronize: true,
       logging: true,
       namingStrategy: new SnakeNamingStrategy(),
