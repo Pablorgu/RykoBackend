@@ -9,7 +9,6 @@ import { AdminModule } from './user/admin.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule } from './auth/auth.module';
 import { DishModule } from './dish/dish.module';
 import { MealModule } from './meal/meal.module';
 import { User } from './user/user.entity';
@@ -26,6 +25,8 @@ import { DayMealModule } from './dayMeal/dayMeal.module';
 import { DayMeal } from './dayMeal/dayMeal.entity';
 import { DayUser } from './dayUser/dayUser.entity';
 import { DayUserModule } from './dayUser/dayUser.module';
+import { UserMealType } from './userMealType/userMealType.entity';
+import { UserMealTypeModule } from './userMealType/userMealType.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { DayUserModule } from './dayUser/dayUser.module';
     DayModule,
     DayMealModule,
     DayUserModule,
+    UserMealTypeModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -48,7 +50,7 @@ import { DayUserModule } from './dayUser/dayUser.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Admin, BaseUser, User, FoodItem, Dish, DishFoodItem, Meal, Day, DayMeal, DayUser],
+      entities: [Admin, BaseUser, User, FoodItem, Dish, DishFoodItem, Meal, Day, DayMeal, DayUser, UserMealType],
       synchronize: true,
       logging: true,
       namingStrategy: new SnakeNamingStrategy(),
