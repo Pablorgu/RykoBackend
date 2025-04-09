@@ -103,9 +103,9 @@ export class MealDishFoodItemService {
 
       const updatedItem = this.repository.merge(item, {
         ...dto,
-        meal: meal ?? item.meal, // Si no hay mealId, usa el valor anterior
-        dish: dish ?? item.dish, // Si no hay dishId, usa el valor anterior
-        foodItem: foodItem ?? item.foodItem, // Si no hay foodItemId, usa el valor anterior
+        meal: meal ?? item.meal,
+        dish: dish ?? item.dish,
+        foodItem: foodItem ?? item.foodItem,
       });
 
 
