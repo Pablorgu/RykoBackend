@@ -61,7 +61,7 @@ export class UserMealTypeService {
   }
 
   //Find All the mealstype related to an user
-  async findAllByUserId(userId: number): Promise<UserMealType[]> {
+  async findByUserId(userId: number): Promise<UserMealType[]> {
     const mealTypes = await this.mealTypeRepository.find({ where: { user: { id: userId } } });
     if (!mealTypes || mealTypes.length === 0) {
       throw new NotFoundException(`No UserMealType found for user with id ${userId}`);
@@ -70,7 +70,7 @@ export class UserMealTypeService {
   }
 
   //Find All the mealstype related to an meal
-  async findAllByMealId(mealId: number): Promise<UserMealType[]> {
+  async findByMealId(mealId: number): Promise<UserMealType[]> {
     const mealTypes = await this.mealTypeRepository.find({ where: { meal: { id: mealId } } });
     if (!mealTypes || mealTypes.length === 0) {
       throw new NotFoundException(`No UserMealType found for meal with id ${mealId}`);

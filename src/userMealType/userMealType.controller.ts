@@ -23,6 +23,16 @@ export class UserMealTypeController {
     return this.usermealTypeService.findOneById(id);
   }
 
+  @Get('user/:userId')
+  async findByUserId(@Param('userId') userId: number): Promise<UserMealType[]> {
+    return this.usermealTypeService.findByUserId(userId);
+  }
+
+  @Get('meal/:mealId')
+  async findByMealId(@Param('mealId') mealId: number): Promise<UserMealType[]> {
+    return this.usermealTypeService.findByMealId(mealId);
+  }
+
   @Put(':id')
   async update(
     @Param('id') id: number,
