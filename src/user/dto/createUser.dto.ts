@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsEmail, IsInt, IsEnum, IsDate, IsOptional, Min, MinLength, IsDateString, Matches } from 'class-validator';
+import { IsString, IsEmail, IsInt, IsEnum, IsDate, IsOptional, Min, MinLength, IsDateString, Matches, IsISO31661Alpha2, IsIn } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -10,6 +10,14 @@ export class CreateUserDto {
 
   @MinLength(6)
   password: string;
+
+  @IsOptional()
+  @IsISO31661Alpha2()
+  country?: string;
+
+  @IsOptional()
+  @IsIn(['male', 'female', 'other'])
+  gender?: 'male' | 'female' | 'other';
 
   @IsInt()
   @Min(1)
