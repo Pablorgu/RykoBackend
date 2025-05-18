@@ -1,8 +1,8 @@
-import { IsOptional, IsString, IsEmail, IsEnum, IsInt, IsNumber, IsDateString } from 'class-validator';
+import { IsOptional, IsString, IsEmail, IsEnum, IsInt, IsNumber, IsDateString, IsArray } from 'class-validator';
 import { CreateUserDto } from './createUser.dto';  // Importa tu DTO de creación si ya lo tienes
 
 export class QueryUserDto {
-  
+
   @IsOptional()
   @IsString()
   username?: string;
@@ -34,4 +34,9 @@ export class QueryUserDto {
   @IsOptional()
   @IsInt()
   calorie_goal?: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  intolerances?: string[];
 }

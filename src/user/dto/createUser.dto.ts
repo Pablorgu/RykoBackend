@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsEmail, IsInt, IsEnum, IsDate, IsOptional, Min, MinLength, IsDateString, Matches, IsISO31661Alpha2, IsIn } from 'class-validator';
+import { IsString, IsEmail, IsInt, IsEnum, IsDate, IsOptional, Min, MinLength, IsDateString, Matches, IsISO31661Alpha2, IsIn, IsArray } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -36,4 +36,9 @@ export class CreateUserDto {
   @IsInt()
   @Min(1)
   calorie_goal: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  intolerances?: string[];
 }

@@ -30,4 +30,7 @@ export class User extends BaseUser {
 
   @Column({ type: 'int', nullable: true })
   calorieGoal?: number;
+
+  @Column("simple-array", { nullable: true })
+  intolerances: string[];
 }
