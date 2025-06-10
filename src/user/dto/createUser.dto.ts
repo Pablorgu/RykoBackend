@@ -1,5 +1,4 @@
-import { Type } from 'class-transformer';
-import { IsString, IsEmail, IsInt, IsEnum, IsDate, IsOptional, Min, MinLength, IsDateString, Matches, IsISO31661Alpha2, IsIn, IsArray } from 'class-validator';
+import { IsString, IsEmail, IsInt, IsEnum, IsOptional, Min, MinLength, IsISO31661Alpha2, IsIn, IsArray } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()

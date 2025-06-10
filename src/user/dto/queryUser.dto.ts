@@ -1,5 +1,4 @@
 import { IsOptional, IsString, IsEmail, IsEnum, IsInt, IsNumber, IsDateString, IsArray } from 'class-validator';
-import { CreateUserDto } from './createUser.dto';  // Importa tu DTO de creación si ya lo tienes
 
 export class QueryUserDto {
 

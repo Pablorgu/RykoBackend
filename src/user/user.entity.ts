@@ -1,7 +1,5 @@
 import { Entity, Column, ChildEntity, Unique, } from 'typeorm';
 import { BaseUser } from './baseUser.entity';
-import { Transform } from 'class-transformer';
-import { Matches } from 'class-validator';
 
 @ChildEntity('user')
 export class User extends BaseUser {
