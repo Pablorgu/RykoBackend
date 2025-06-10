@@ -33,6 +33,7 @@ import { PantryModule } from './pantry/pantry.module';
 import { Pantry } from './pantry/pantry.entity';
 import { ShoppingModule } from './shoppinglist/shoppinglist.module';
 import { Shoppinglist } from './shoppinglist/shoppinglist.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { Shoppinglist } from './shoppinglist/shoppinglist.entity';
     MealDishFoodItemModule,
     PantryModule,
     ShoppingModule,
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
