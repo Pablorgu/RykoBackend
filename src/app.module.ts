@@ -34,6 +34,7 @@ import { Pantry } from './pantry/pantry.entity';
 import { ShoppingModule } from './shoppinglist/shoppinglist.module';
 import { Shoppinglist } from './shoppinglist/shoppinglist.entity';
 import { AuthModule } from './auth/auth.module';
+import configuration from './config/configuration';
 
 @Module({
   imports: [
@@ -53,6 +54,8 @@ import { AuthModule } from './auth/auth.module';
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
+      load: [configuration],
+      envFilePath: '.env',
     }),
     TypeOrmModule.forRoot({
       type: 'mariadb',

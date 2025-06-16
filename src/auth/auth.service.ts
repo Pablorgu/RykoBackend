@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { RegisterLocalDto } from "./dto/registerLocal.dto";
 import { UserService } from "src/user/user.service";
 import { UserType } from "src/user/userType.enum";
+import { GoogleLoginDto } from "./dto/registerGoogle.dto";
 
 @Injectable()
 export class AuthService {
@@ -35,8 +36,31 @@ export class AuthService {
       .addSelect('u.password')
       .where('u.email=:email', { email })
       .getOne();
-    if (!u) return null;
+    if (!u || !u.password) return null;
     return (await bcrypt.compare(pass, u.password)) ? u : null;
+  }
+
+  async validateGoogleLogin(dto: GoogleLoginDto): Promise<BaseUser> {
+    const { googleId, email, username } = dto;
+
+    let user = await this.repo.findOne({ where: { googleId } });
+    if (user) return user;
+
+    const local = await this.repo.findOne({ where: { email } });
+    if (local) {
+      throw new ConflictException(
+        'This email is already registered locally; please use your password.'
+      );
+    }
+
+    user = await this.userService.create({
+      username,
+      email,
+      password: undefined,
+      googleId,
+    });
+
+    return user;
   }
 
   tokenFor(u: BaseUser) {

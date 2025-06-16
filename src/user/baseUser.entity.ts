@@ -24,8 +24,11 @@ export abstract class BaseUser {
   email: string;
 
   @Exclude()
-  @Column({ select: false })
-  password: string;
+  @Column({ type: 'varchar', nullable: true, select: false })
+  password?: string;
+
+  @Column({ type: 'varchar', nullable: true, unique: true })
+  googleId?: string;
 
   @Column({
     type: 'enum',
