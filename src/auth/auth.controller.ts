@@ -4,27 +4,17 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { BaseUser } from "src/user/baseUser.entity";
 import { LocalAuthGuard } from "./strategies/local.strategy";
-import * as bcrypt from "bcrypt";
-
-interface RegisterDto {
-  email: string;
-  username: string;
-  password: string;
-}
+import { RegisterLocalDto } from "./dto/registerLocal.dto";
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private auth: AuthService,
-    @InjectRepository(BaseUser) private repo: Repository<BaseUser>,
   ) { }
 
   @Post('register')
-  async register(@Body() dto: RegisterDto) {
-    const hash = await bcrypt.hash(dto.password, 12);
-    const user = this.repo.create({ ...dto, password: hash });
-    await this.repo.save(user);
-    return { access_token: this.auth.tokenFor(user) };
+  async register(@Body() dto: RegisterLocalDto) {
+    return this.auth.register(dto);
   }
 
   @UseGuards(LocalAuthGuard)

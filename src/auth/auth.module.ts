@@ -10,12 +10,14 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { AuthController } from './auth.controller';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([BaseUser]),
     PassportModule,
     ConfigModule,
+    UserModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: cfg => ({

@@ -7,6 +7,7 @@ import {
   PrimaryColumn,
   Unique,
 } from 'typeorm';
+import { UserType } from './userType.enum';
 
 @Entity()
 @TableInheritance({ column: { type: 'varchar', name: 'type' } })
@@ -25,4 +26,11 @@ export abstract class BaseUser {
   @Exclude()
   @Column({ select: false })
   password: string;
+
+  @Column({
+    type: 'enum',
+    enum: UserType,
+    name: 'type',
+  })
+  type: UserType;
 }
