@@ -22,6 +22,7 @@ export class AuthService {
     const exist = await this.userService.findOneByEmail(dto.email)
     if (exist) throw new ConflictException('User already exists');
 
+    dto.username = dto.email.split('@')[0];
     const hash = await bcrypt.hash(dto.password, 12);
     const user = this.repo.create({ ...dto, password: hash, type: UserType.USER });
     await this.repo.save(user);
