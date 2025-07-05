@@ -5,6 +5,7 @@ export class RegisterLocalDto {
   @IsEmail()
   email: string;
 
+  @IsOptional()
   @IsString()
   @MinLength(3)
   username: string;

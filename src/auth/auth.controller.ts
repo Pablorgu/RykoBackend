@@ -1,9 +1,10 @@
-import { Body, Controller, Post, UseGuards, Request, Get, Req } from "@nestjs/common";
+import { Body, Controller, Post, UseGuards, Get, Req, Res } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { LocalAuthGuard } from "./strategies/local.strategy";
 import { RegisterLocalDto } from "./dto/registerLocal.dto";
 import { AuthGuard } from "@nestjs/passport";
 import { BaseUser } from "src/user/baseUser.entity";
+import { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -18,7 +19,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Request() req: any) {
+  login(@Req() req: any) {
     return { access_token: this.auth.tokenFor(req.user) };
   }
 
@@ -33,11 +34,14 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  googleCallback(
-    @Req() req: Request & { user: BaseUser }
-  ) {
-    const user = req.user;
-    return { access_token: this.auth.tokenFor(user) };
-  }
+  googleCallback(@Req() req: Request, @Res() res: Response) {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Usuario no autenticado' });
+    }
 
+    const token = this.auth.tokenFor(req.user as BaseUser);
+    console.log(token);
+    // return res.redirect(`ryko://auth?token=${token}`);
+    return res.redirect(`https://auth.expo.io/@blose/RykoFrontend?token=${token}`);
+  }
 }
