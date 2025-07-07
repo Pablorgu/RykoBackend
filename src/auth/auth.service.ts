@@ -1,13 +1,13 @@
-import { ConflictException, Injectable } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { InjectRepository } from "@nestjs/typeorm";
-import { BaseUser } from "src/user/baseUser.entity";
-import { Repository } from "typeorm";
+import { ConflictException, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { BaseUser } from 'src/user/baseUser.entity';
+import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { RegisterLocalDto } from "./dto/registerLocal.dto";
-import { UserService } from "src/user/user.service";
-import { UserType } from "src/user/userType.enum";
-import { GoogleLoginDto } from "./dto/registerGoogle.dto";
+import { RegisterLocalDto } from './dto/registerLocal.dto';
+import { UserService } from 'src/user/user.service';
+import { UserType } from 'src/user/userType.enum';
+import { GoogleLoginDto } from './dto/registerGoogle.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,15 +16,19 @@ export class AuthService {
     @InjectRepository(BaseUser)
     private repo: Repository<BaseUser>,
     private jwt: JwtService,
-  ) { }
+  ) {}
 
   async register(dto: RegisterLocalDto): Promise<{ access_token: string }> {
-    const exist = await this.userService.findOneByEmail(dto.email)
+    const exist = await this.userService.findOneByEmail(dto.email);
     if (exist) throw new ConflictException('User already exists');
 
     dto.username = dto.email.split('@')[0];
     const hash = await bcrypt.hash(dto.password, 12);
-    const user = this.repo.create({ ...dto, password: hash, type: UserType.USER });
+    const user = this.repo.create({
+      ...dto,
+      password: hash,
+      type: UserType.USER,
+    });
     await this.repo.save(user);
 
     const token = this.tokenFor(user);
@@ -50,7 +54,7 @@ export class AuthService {
     const local = await this.repo.findOne({ where: { email } });
     if (local) {
       throw new ConflictException(
-        'This email is already registered locally; please use your password.'
+        'This email is already registered locally; please use your password.',
       );
     }
 
@@ -66,5 +70,17 @@ export class AuthService {
 
   tokenFor(u: BaseUser) {
     return this.jwt.sign({ sub: u.id, email: u.email, type: (u as any).type });
+  }
+
+  async getUserFromToken(token: string): Promise<BaseUser> {
+    try {
+      const payload = this.jwt.verify(token);
+      console.log('payload:', payload);
+      const user = await this.repo.findOne({ where: { id: payload.sub } });
+      if (!user) throw new ConflictException('User not found');
+      return user;
+    } catch (error) {
+      throw new ConflictException('Token inválido');
+    }
   }
 }

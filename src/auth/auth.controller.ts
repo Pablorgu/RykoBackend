@@ -44,4 +44,9 @@ export class AuthController {
     // return res.redirect(`ryko://auth?token=${token}`);
     return res.redirect(`https://auth.expo.io/@blose/RykoFrontend?token=${token}`);
   }
+
+  @Get('me')
+  async getUserFromToken(@Body('token') token: string) {
+    return this.auth.getUserFromToken(token);
+  }
 }
