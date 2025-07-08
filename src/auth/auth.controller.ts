@@ -1,16 +1,24 @@
-import { Body, Controller, Post, UseGuards, Get, Req, Res } from "@nestjs/common";
-import { AuthService } from "./auth.service";
-import { LocalAuthGuard } from "./strategies/local.strategy";
-import { RegisterLocalDto } from "./dto/registerLocal.dto";
-import { AuthGuard } from "@nestjs/passport";
-import { BaseUser } from "src/user/baseUser.entity";
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  Get,
+  Req,
+  Res,
+  Param,
+  Query,
+} from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { LocalAuthGuard } from './strategies/local.strategy';
+import { RegisterLocalDto } from './dto/registerLocal.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { BaseUser } from 'src/user/baseUser.entity';
 import { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private auth: AuthService,
-  ) { }
+  constructor(private auth: AuthService) {}
 
   @Post('register')
   async register(@Body() dto: RegisterLocalDto) {
@@ -31,7 +39,6 @@ export class AuthController {
     // After successful authentication, the user will be redirected to the callback URL
   }
 
-
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   googleCallback(@Req() req: Request, @Res() res: Response) {
@@ -42,11 +49,14 @@ export class AuthController {
     const token = this.auth.tokenFor(req.user as BaseUser);
     console.log(token);
     // return res.redirect(`ryko://auth?token=${token}`);
-    return res.redirect(`https://auth.expo.io/@blose/RykoFrontend?token=${token}`);
+    return res.redirect(
+      `https://auth.expo.io/@blose/RykoFrontend?token=${token}`,
+    );
   }
 
   @Get('me')
-  async getUserFromToken(@Body('token') token: string) {
+  async getUserFromToken(@Query('token') token: string) {
+    console.log('El token es el siguiente:', token);
     return this.auth.getUserFromToken(token);
   }
 }
