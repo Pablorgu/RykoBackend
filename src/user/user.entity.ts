@@ -1,9 +1,10 @@
-import { Entity, Column, ChildEntity, Unique } from 'typeorm';
+import { Entity, Column, ChildEntity, Unique, Check } from 'typeorm';
 import { BaseUser } from './baseUser.entity';
 import { Gender } from './enums/gender.enum';
 import { WeightAim } from './enums/weightAim.enum';
 
 @ChildEntity('user')
+@Check("protein_pct + carbs_pct + fat_pct = 100")
 export class User extends BaseUser {
   @Column({ nullable: true })
   country?: string;
@@ -31,4 +32,13 @@ export class User extends BaseUser {
 
   @Column('simple-array', { nullable: true })
   intolerances: string[];
+
+  @Column({ type: 'smallint', default: 30 })
+  proteinPct: number;
+
+  @Column({ type: 'smallint', default: 45 })
+  carbsPct: number;
+
+  @Column({ type: 'smallint', default: 25 })
+  fatPct: number;
 }
