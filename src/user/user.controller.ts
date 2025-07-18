@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/createUser.dto';
@@ -20,6 +21,8 @@ import { User } from './user.entity';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Gender } from './enums/gender.enum';
 import { WeightAim } from './enums/weightAim.enum';
+import { UserFullProfileDto } from './dto/user-full-profile.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('users')
 export class UserController {
@@ -113,14 +116,21 @@ export class UserController {
     try {
       console.log(`DTO recibido:`, updateProfileDto);
       const updateData = {
-        birthdate: updateProfileDto.fecha,
-        gender: updateProfileDto.genero,
-        country: updateProfileDto.pais,
-        weight: parseFloat(updateProfileDto.peso),
-        height: parseInt(updateProfileDto.altura),
-        aim: updateProfileDto.objetivo,
-        calorieGoal: parseInt(updateProfileDto.calorias),
-        intolerances: updateProfileDto.intolerancias,
+        ...(updateProfileDto.username && {
+          username: updateProfileDto.username,
+        }),
+        ...(updateProfileDto.email && { email: updateProfileDto.email }),
+        birthdate: updateProfileDto.birthdate,
+        gender: updateProfileDto.gender,
+        country: updateProfileDto.country,
+        weight: updateProfileDto.weight,
+        height: updateProfileDto.height,
+        aim: updateProfileDto.aim,
+        calorieGoal: updateProfileDto.calorieGoal,
+        intolerances: updateProfileDto.intolerances,
+        proteinPct: updateProfileDto.proteinPct,
+        carbsPct: updateProfileDto.carbsPct,
+        fatPct: updateProfileDto.fatPct,
       };
       console.log('datos a actualizar:', updateData);
 
@@ -130,5 +140,14 @@ export class UserController {
         'An unexpected error occurred while updating user profile',
       );
     }
+  }
+
+  @Get('profile/:id')
+  @UseGuards(JwtAuthGuard)
+  async getFullProfile(@Param('id') id: number): Promise<UserFullProfileDto> {
+    if (!id) {
+      throw new BadRequestException('Id is required');
+    }
+    return this.userService.getFullProfile(id);
   }
 }

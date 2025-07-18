@@ -3,6 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { BaseUser } from './baseUser.entity';
+import { UserFullProfileDto } from './dto/user-full-profile.dto';
+import { Gender } from './enums/gender.enum';
+import { WeightAim } from './enums/weightAim.enum';
 
 export enum Aim {
   WEIGHT_LOSS = 'weight_loss',
@@ -43,7 +46,9 @@ export class UserService {
     // Iterates through the filter keys and adds them to the query.
     for (const [key, value] of Object.entries(filters)) {
       if (value) {
-        queryBuilder.andWhere(`user.${key} LIKE :${key}`, { [key]: `%${value}%` });
+        queryBuilder.andWhere(`user.${key} LIKE :${key}`, {
+          [key]: `%${value}%`,
+        });
       }
     }
 
@@ -59,16 +64,41 @@ export class UserService {
   }
 
   //Actualiza un usuario de uno o mas atributos
-  async update(id: number, userData: Partial<User>): Promise<User>{
+  async update(id: number, userData: Partial<User>): Promise<User> {
     const user = await this.findOneById(id);
-    await  this.userRepository.update(id, userData);
+    await this.userRepository.update(id, userData);
     return this.findOneById(id);
   }
 
   //Método para eliminar un usuario por su id
-  async remove(id:number): Promise<User> {
+  async remove(id: number): Promise<User> {
     const user = await this.findOneById(id);
     await this.userRepository.remove(user);
-    return user;  
+    return user;
+  }
+
+  // Método para obtener el perfil completo del usuario
+  async getFullProfile(id: number): Promise<UserFullProfileDto> {
+    const user = await this.findOneById(id);
+    if (!user) {
+      throw new Error(`User with id ${id} not found`);
+    }
+    console.log('user:', JSON.stringify(user, null, 2));
+    return {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      country: user.country,
+      gender: user.gender as Gender,
+      weight: user.weight,
+      height: user.height,
+      birthdate: user.birthdate,
+      aim: user.aim as WeightAim,
+      calorieGoal: user.calorieGoal,
+      intolerances: user.intolerances,
+      proteinPct: user.proteinPct,
+      carbsPct: user.carbsPct,
+      fatPct: user.fatPct,
+    };
   }
 }
