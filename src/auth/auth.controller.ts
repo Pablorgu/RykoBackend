@@ -47,7 +47,6 @@ export class AuthController {
     }
 
     const token = this.auth.tokenFor(req.user as BaseUser);
-    console.log(token);
     // return res.redirect(`ryko://auth?token=${token}`);
     return res.redirect(
       `https://auth.expo.io/@blose/RykoFrontend?token=${token}`,
@@ -56,7 +55,6 @@ export class AuthController {
 
   @Get('me')
   async getUserFromToken(@Query('token') token: string) {
-    console.log('El token es el siguiente:', token);
     return this.auth.getUserFromToken(token);
   }
 }

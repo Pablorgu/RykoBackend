@@ -69,13 +69,12 @@ export class AuthService {
   }
 
   tokenFor(u: BaseUser) {
-    return this.jwt.sign({ sub: u.id, email: u.email, type: (u as any).type });
+    return this.jwt.sign({ sub: u.id });
   }
 
   async getUserFromToken(token: string): Promise<BaseUser> {
     try {
       const payload = this.jwt.verify(token);
-      console.log('payload:', payload);
       const user = await this.repo.findOne({ where: { id: payload.sub } });
       if (!user) throw new ConflictException('User not found');
       return user;
