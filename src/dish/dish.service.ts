@@ -218,4 +218,117 @@ export class DishService {
       }
     }
   }
+
+  // Nuevo: obtener platos formateados por usuario
+  async findUserPlatesFormatted(userId: number): Promise<
+    Array<{
+      id: string;
+      name: string;
+      description?: string;
+      image?: string;
+      ingredients: string[];
+      macros: { carbs: number; fat: number; protein: number };
+    }>
+  > {
+    const dishes = await this.dishRepository
+      .createQueryBuilder('dish')
+      .leftJoinAndSelect('dish.dishFoodItems', 'dfi')
+      .leftJoinAndSelect('dfi.foodItem', 'fi')
+      .where('dish.UserId = :userId', { userId })
+      .getMany();
+
+    const result = dishes.map((dish) => {
+      const ingredients = (dish.dishFoodItems || [])
+        .map((dfi: DishFoodItem) => dfi?.foodItem?.name || 'unknown')
+        .filter((name: string) => !!name);
+
+      // Agregar macros totales del plato
+      let totalCarbsG = 0;
+      let totalFatG = 0;
+      let totalProteinG = 0;
+      for (const dfi of dish.dishFoodItems || []) {
+        const qty = Number(dfi.quantity) || 0; //in grams
+        const fi = dfi.foodItem;
+        if (!fi || qty <= 0) continue;
+
+        // asumimos macros por 100g
+        const carbsPer100 = fi.carbohydrates ?? 0;
+        const fatPer100 = fi.fat ?? 0;
+        const proteinPer100 = fi.proteins ?? 0;
+
+        totalCarbsG += (carbsPer100 * qty) / 100;
+        totalFatG += (fatPer100 * qty) / 100;
+        totalProteinG += (proteinPer100 * qty) / 100;
+      }
+
+      const macros = this.computeMacroPercents(
+        totalCarbsG,
+        totalFatG,
+        totalProteinG,
+      );
+
+      return {
+        id: String(dish.id),
+        name: dish.name,
+        description: dish.description,
+        image: dish.image,
+        ingredients,
+        macros,
+      };
+    });
+
+    return result;
+  }
+
+  private computeMacroPercents(
+    carbsG: number,
+    fatG: number,
+    proteinG: number,
+  ): { carbs: number; fat: number; protein: number } {
+    const carbsCal = carbsG * 4;
+    const fatCal = fatG * 9;
+    const proteinCal = proteinG * 4;
+    const totalCal = carbsCal + fatCal + proteinCal;
+
+    if (!totalCal || totalCal <= 0) {
+      return { carbs: 0, fat: 0, protein: 0 };
+    }
+
+    const rawCarbs = (carbsCal / totalCal) * 100;
+    const rawFat = (fatCal / totalCal) * 100;
+    const rawProtein = (proteinCal / totalCal) * 100;
+
+    let carbs = Math.round(rawCarbs);
+    let fat = Math.round(rawFat);
+    let protein = Math.round(rawProtein);
+
+    // Ajuste para que sumen 100
+    let diff = 100 - (carbs + fat + protein);
+    if (diff !== 0) {
+      type MacroKey = 'carbs' | 'fat' | 'protein';
+
+      const remainders: Array<{ key: MacroKey; rem: number }> = [
+        { key: 'carbs', rem: rawCarbs - Math.floor(rawCarbs) },
+        { key: 'fat', rem: rawFat - Math.floor(rawFat) },
+        { key: 'protein', rem: rawProtein - Math.floor(rawProtein) },
+      ];
+
+      while (diff !== 0) {
+        const target = remainders[0].key;
+        if (diff > 0) {
+          if (target === 'carbs') carbs++;
+          else if (target === 'fat') fat++;
+          else protein++;
+          diff--;
+        } else {
+          if (target === 'carbs') carbs--;
+          else if (target === 'fat') fat--;
+          else protein--;
+          diff++;
+        }
+      }
+    }
+
+    return { carbs, fat, protein };
+  }
 }

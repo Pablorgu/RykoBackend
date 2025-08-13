@@ -58,4 +58,20 @@ export class DishController {
   ) {
     return this.dishService.createWithIngredients(createDishWithIngredientsDto);
   }
+
+  @Get('user/:userId/plates')
+  async getUserPlatesFormatted(
+    @Param('userId') userId: number,
+  ): Promise<
+    Array<{
+      id: string;
+      name: string;
+      description?: string;
+      image?: string;
+      ingredients: string[];
+      macros: { carbs: number; fat: number; protein: number };
+    }>
+  > {
+    return this.dishService.findUserPlatesFormatted(userId);
+  }
 }
