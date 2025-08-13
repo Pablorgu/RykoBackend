@@ -35,6 +35,7 @@ import { ShoppingModule } from './shoppinglist/shoppinglist.module';
 import { Shoppinglist } from './shoppinglist/shoppinglist.entity';
 import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import configuration from './config/configuration';
     PantryModule,
     ShoppingModule,
     AuthModule,
+    UploadModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
@@ -64,7 +66,22 @@ import configuration from './config/configuration';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Admin, BaseUser, User, FoodItem, Dish, DishFoodItem, Meal, Day, DayMeal, DayUser, UserMealType, MealDishFoodItem, Pantry, Shoppinglist],
+      entities: [
+        Admin,
+        BaseUser,
+        User,
+        FoodItem,
+        Dish,
+        DishFoodItem,
+        Meal,
+        Day,
+        DayMeal,
+        DayUser,
+        UserMealType,
+        MealDishFoodItem,
+        Pantry,
+        Shoppinglist,
+      ],
       synchronize: true,
       logging: true,
       namingStrategy: new SnakeNamingStrategy(),
@@ -73,4 +90,4 @@ import configuration from './config/configuration';
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

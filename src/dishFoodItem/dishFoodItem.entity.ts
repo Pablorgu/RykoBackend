@@ -1,6 +1,12 @@
-import { Dish } from "src/dish/dish.entity";
-import { FoodItem } from "src/foodItem/foodItem.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Dish } from 'src/dish/dish.entity';
+import { FoodItem } from 'src/foodItem/foodItem.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class DishFoodItem {
@@ -11,13 +17,10 @@ export class DishFoodItem {
   @JoinColumn({ name: 'dish_id' })
   dish: Dish;
 
-  @ManyToOne(() => FoodItem, (foodItem) => foodItem.dishFoodItems, { onDelete: 'CASCADE' })
+  @ManyToOne(() => FoodItem, (foodItem) => foodItem.dishFoodItems)
   @JoinColumn({ name: 'food_item_id' })
   foodItem: FoodItem;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
-  quantity: number; // Default quantity
-
-  @Column({ nullable: true })
-  unit: string;
+  quantity: number; // Default quantity: kcal
 }
