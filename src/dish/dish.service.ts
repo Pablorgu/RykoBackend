@@ -1,103 +1,221 @@
-
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Dish } from './dish.entity';
+import { DishFoodItem } from '../dishFoodItem/dishFoodItem.entity';
+import { FoodItem } from '../foodItem/foodItem.entity';
+import { FoodItemService } from '../foodItem/fooditem.service';
+import { CreateDishWithIngredientsDto } from './dto/createDishWithIngredients.dto';
 
 @Injectable()
 export class DishService {
-    constructor(
-        @InjectRepository(Dish)
-        private readonly dishRepository: Repository<Dish>
-    ) { }
+  constructor(
+    @InjectRepository(Dish)
+    private readonly dishRepository: Repository<Dish>,
+    @InjectRepository(DishFoodItem)
+    private readonly dishFoodItemRepository: Repository<DishFoodItem>,
+    @InjectRepository(FoodItem)
+    private readonly foodItemRepository: Repository<FoodItem>,
+    private readonly foodItemService: FoodItemService,
+    private dataSource: DataSource,
+  ) {}
 
-    //Get all dishes from one user
-    async findAllByUser(userId: number): Promise<Dish[]> {
-        return this.dishRepository.find({ where: { UserId: userId } });
-    }
+  //Get all dishes from one user
+  async findAllByUser(userId: number): Promise<Dish[]> {
+    return this.dishRepository.find({ where: { UserId: userId } });
+  }
 
-    //Get one dish by its id
-    async findOneById(id: number): Promise<Dish | null> {
-        return this.dishRepository.findOne({ where: { id } });
-    }
+  //Get one dish by its id
+  async findOneById(id: number): Promise<Dish | null> {
+    return this.dishRepository.findOne({ where: { id } });
+  }
 
-    //Filter dishes by any attribute
-    async filterDishes(filters: Partial<Dish>): Promise<Dish[]> {
-        try {
-            const queryBuilder = this.dishRepository.createQueryBuilder('dish');
-    
-            // Iterate through the filter keys and add them to the query
-            for (const [key, value] of Object.entries(filters)) {
-                if (value) {
-                    queryBuilder.andWhere(`dish.${key} LIKE :${key}`, { [key]: `%${value}%` });
-                }
-            }
-    
-            // Execute the query
-            return await queryBuilder.getMany();
-        } catch (error) {
-            console.error("Error filtering dishes:", error);
-            throw new Error("An error occurred while filtering dishes. Please try again later.");
+  //Filter dishes by any attribute
+  async filterDishes(filters: Partial<Dish>): Promise<Dish[]> {
+    try {
+      const queryBuilder = this.dishRepository.createQueryBuilder('dish');
+
+      // Iterate through the filter keys and add them to the query
+      for (const [key, value] of Object.entries(filters)) {
+        if (value) {
+          queryBuilder.andWhere(`dish.${key} LIKE :${key}`, {
+            [key]: `%${value}%`,
+          });
         }
-    }
-    
-    //Create a dish
-    async create(dishData: Partial<Dish>): Promise<Dish | null> {
-        try {
-            const existingDish = await this.dishRepository.findOne({ where: { name: dishData.name, UserId: dishData.UserId} });
-    
-            if (existingDish) {
-                throw new ConflictException(`Dish with name "${dishData.name}" already exists`);
-            }
-    
-            const dish = this.dishRepository.create(dishData);
-            await this.dishRepository.save(dish);
-            
-            return dish;
-        } catch (error) {
-            if (error instanceof ConflictException) {
-                throw error;  // Lanzamos el error si es un conflicto con el nombre
-            }
-    
-            throw new InternalServerErrorException("An error occurred while creating the dish");
-        }
-    }
+      }
 
-    //Update a dish
-    async update(id: number, dishData: Partial<Dish>): Promise<Dish> {
-        try {
-            const dish = await this.findOneById(id);
-    
-            if (!dish) {
-                throw new NotFoundException(`Dish with ID ${id} not found`);
-            }
-    
-            await this.dishRepository.update({ id }, dishData);
-    
-            const updatedDish = await this.dishRepository.findOne({ where: { id } });
-    
-            if (!updatedDish) {
-                throw new InternalServerErrorException("Failed to update the dish");
-            }
-    
-            return updatedDish;
-        } catch (error) {
-            throw new InternalServerErrorException("An error occurred while updating the dish");
-        }
+      // Execute the query
+      return await queryBuilder.getMany();
+    } catch (error) {
+      console.error('Error filtering dishes:', error);
+      throw new Error(
+        'An error occurred while filtering dishes. Please try again later.',
+      );
     }
+  }
 
-    //Delete a dish
-    async delete(id: number): Promise<string> {
-        try {
-            const result = await this.dishRepository.delete({ id });
-    
-            if (result.affected === 0) {
-                throw new NotFoundException(`Dish with ID ${id} not found`);
-            }
-    
-            return "Dish deleted successfully";
-        } catch (error) {
-            throw new InternalServerErrorException("An error occurred while deleting the dish");
-        }
+  //Create a dish
+  async create(dishData: Partial<Dish>): Promise<Dish | null> {
+    try {
+      const existingDish = await this.dishRepository.findOne({
+        where: { name: dishData.name, UserId: dishData.UserId },
+      });
+
+      if (existingDish) {
+        throw new ConflictException(
+          `Dish with name "${dishData.name}" already exists`,
+        );
+      }
+
+      const dish = this.dishRepository.create(dishData);
+      await this.dishRepository.save(dish);
+
+      return dish;
+    } catch (error) {
+      if (error instanceof ConflictException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException(
+        'An error occurred while creating the dish',
+      );
     }
+  }
+
+  //Update a dish
+  async update(id: number, dishData: Partial<Dish>): Promise<Dish> {
+    try {
+      const dish = await this.findOneById(id);
+
+      if (!dish) {
+        throw new NotFoundException(`Dish with ID ${id} not found`);
+      }
+
+      await this.dishRepository.update({ id }, dishData);
+
+      const updatedDish = await this.dishRepository.findOne({ where: { id } });
+
+      if (!updatedDish) {
+        throw new InternalServerErrorException('Failed to update the dish');
+      }
+
+      return updatedDish;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'An error occurred while updating the dish',
+      );
+    }
+  }
+
+  //Delete a dish
+  async delete(id: number): Promise<string> {
+    try {
+      const result = await this.dishRepository.delete({ id });
+
+      if (result.affected === 0) {
+        throw new NotFoundException(`Dish with ID ${id} not found`);
+      }
+
+      return 'Dish deleted successfully';
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'An error occurred while deleting the dish',
+      );
+    }
+  }
+
+  // Create plate with ingredients
+  async createWithIngredients(
+    dishData: CreateDishWithIngredientsDto,
+  ): Promise<Dish | undefined> {
+    const maxRetries = 3;
+    let attempt = 0;
+
+    while (attempt < maxRetries) {
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      try {
+        // Verificar si ya existe un plato con el mismo nombre para el usuario
+        const existingDish = await queryRunner.manager.findOne(Dish, {
+          where: { name: dishData.name, UserId: dishData.UserId },
+        });
+
+        if (existingDish) {
+          throw new ConflictException(
+            `Dish with name "${dishData.name}" already exists`,
+          );
+        }
+
+        // Crear el plato
+        const dish = queryRunner.manager.create(Dish, {
+          name: dishData.name,
+          description: dishData.description,
+          image: dishData.image,
+          UserId: dishData.UserId,
+        });
+
+        const savedDish = await queryRunner.manager.save(dish);
+
+        // Create dishFoodItems relations
+        const dishFoodItems = [];
+        for (const ingredient of dishData.ingredients) {
+          const foodItem = await this.foodItemService.deepFind(
+            ingredient.barcode,
+          );
+
+          if (!foodItem) {
+            throw new NotFoundException(
+              `Food item with barcode ${ingredient.barcode} not found`,
+            );
+          }
+
+          const dishFoodItem = queryRunner.manager.create(DishFoodItem, {
+            dish: savedDish,
+            foodItem: foodItem,
+            quantity: ingredient.quantity,
+          });
+
+          dishFoodItems.push(dishFoodItem);
+        }
+
+        await queryRunner.manager.save(DishFoodItem, dishFoodItems);
+        await queryRunner.commitTransaction();
+
+        return savedDish;
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+
+        // If it is the specific error and not the last attempt, retry
+        if (
+          error.message.includes('Record has changed since last read') &&
+          attempt < maxRetries - 1
+        ) {
+          attempt++;
+          await new Promise((resolve) => setTimeout(resolve, 100 * attempt)); // Delay incremental
+          continue;
+        }
+
+        // If it is the specific error and not the last attempt, throw exception
+        if (
+          error instanceof ConflictException ||
+          error instanceof NotFoundException
+        ) {
+          throw error;
+        }
+
+        throw new InternalServerErrorException(
+          'An error occurred while creating the dish with ingredients',
+        );
+      } finally {
+        await queryRunner.release();
+      }
+    }
+  }
 }
