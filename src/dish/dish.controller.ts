@@ -14,6 +14,7 @@ import { CreateDishDto } from './dto/createDish.dto';
 import { QueryDishDto } from './dto/queryDish.dto';
 import { filter } from 'rxjs';
 import { CreateDishWithIngredientsDto } from './dto/createDishWithIngredients.dto';
+import { UpdateDishIngredientsDto } from './dto/updateDishIngredients.dto';
 
 @Controller('dishes')
 export class DishController {
@@ -60,9 +61,7 @@ export class DishController {
   }
 
   @Get('user/:userId/plates')
-  async getUserPlatesFormatted(
-    @Param('userId') userId: number,
-  ): Promise<
+  async getUserPlatesFormatted(@Param('userId') userId: number): Promise<
     Array<{
       id: string;
       name: string;
@@ -73,5 +72,14 @@ export class DishController {
     }>
   > {
     return this.dishService.findUserPlatesFormatted(userId);
+  }
+
+  @Put(':id/food-items')
+  async updateIngredients(
+    @Param('id') id: string,
+    @Body() updateDishIngredientsDto: UpdateDishIngredientsDto,
+  ) {
+    const dishId = parseInt(id, 10);
+    return this.dishService.updateIngredients(dishId, updateDishIngredientsDto);
   }
 }

@@ -13,7 +13,7 @@ export class FoodItem {
   @PrimaryColumn({ type: 'bigint' })
   barcode: number;
 
-  @Column({ type: 'varchar', default: 'unknown' })
+  @Column({ type: 'varchar', default: 'No especificado' })
   name: string;
 
   @Column({ type: 'varchar', nullable: true })

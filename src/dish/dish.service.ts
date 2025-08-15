@@ -11,6 +11,7 @@ import { DishFoodItem } from '../dishFoodItem/dishFoodItem.entity';
 import { FoodItem } from '../foodItem/foodItem.entity';
 import { FoodItemService } from '../foodItem/fooditem.service';
 import { CreateDishWithIngredientsDto } from './dto/createDishWithIngredients.dto';
+import { UpdateDishIngredientsDto } from './dto/updateDishIngredients.dto';
 
 @Injectable()
 export class DishService {
@@ -330,5 +331,100 @@ export class DishService {
     }
 
     return { carbs, fat, protein };
+  }
+
+  async updateIngredients(
+    dishId: number,
+    updateData: UpdateDishIngredientsDto,
+  ): Promise<Dish> {
+    const maxRetries = 3;
+    let attempt = 0;
+
+    while (attempt < maxRetries) {
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      try {
+        // Verify dish exists
+        const dish = await queryRunner.manager.findOne(Dish, {
+          where: { id: dishId },
+        });
+
+        if (!dish) {
+          throw new NotFoundException(`Dish with ID ${dishId} not found`);
+        }
+
+        // Delete existing ingredients
+        await queryRunner.manager.delete(DishFoodItem, {
+          dish: { id: dishId },
+        });
+
+        // Create new ingredients
+        const dishFoodItems = [];
+        for (const ingredient of updateData.ingredients) {
+          // Convertir barcode string a number
+          const barcodeNumber = parseInt(ingredient.barcode, 10);
+
+          const foodItem = await this.foodItemService.deepFind(barcodeNumber);
+
+          if (!foodItem) {
+            throw new NotFoundException(
+              `Food item with barcode ${ingredient.barcode} not found`,
+            );
+          }
+
+          const dishFoodItem = queryRunner.manager.create(DishFoodItem, {
+            dish: dish,
+            foodItem: foodItem,
+            quantity: ingredient.quantity,
+          });
+
+          dishFoodItems.push(dishFoodItem);
+        }
+
+        // Save new ingredients
+        await queryRunner.manager.save(DishFoodItem, dishFoodItems);
+        await queryRunner.commitTransaction();
+
+        // Return the plate updated
+        const updatedDish = await this.dishRepository.findOne({
+          where: { id: dishId },
+          relations: ['dishFoodItems', 'dishFoodItems.foodItem'],
+        });
+
+        if (!updatedDish) {
+          throw new InternalServerErrorException(
+            `Dish with ID ${dishId} not found after update`,
+          );
+        }
+
+        return updatedDish;
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+
+        // If it is the specific error, retry
+
+        if (
+          error.message.includes('Record has changed since last read') &&
+          attempt < maxRetries - 1
+        ) {
+          attempt++;
+          await new Promise((resolve) =>
+            setTimeout(resolve, 100 * Math.pow(2, attempt)),
+          );
+          continue;
+        }
+
+        // If it is other error
+        throw error;
+      } finally {
+        await queryRunner.release();
+      }
+    }
+
+    throw new InternalServerErrorException(
+      'Failed to update ingredients after multiple attempts',
+    );
   }
 }
