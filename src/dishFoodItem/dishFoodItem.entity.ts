@@ -6,9 +6,11 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 
 @Entity()
+@Unique(['dish', 'foodItem'])
 export class DishFoodItem {
   @PrimaryGeneratedColumn()
   id: number;
@@ -21,6 +23,6 @@ export class DishFoodItem {
   @JoinColumn({ name: 'food_item_id' })
   foodItem: FoodItem;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  quantity: number; // Default quantity: kcal
+  @Column({ type: 'int' })
+  quantity: number; // Cantidad en gramos
 }
