@@ -1,10 +1,11 @@
-import { Entity, Column, ChildEntity, Unique, Check } from 'typeorm';
+import { Entity, Column, ChildEntity, Unique, Check, OneToMany } from 'typeorm';
 import { BaseUser } from './baseUser.entity';
 import { Gender } from './enums/gender.enum';
 import { WeightAim } from './enums/weightAim.enum';
+import { Day } from 'src/day/day.entity';
 
 @ChildEntity('user')
-@Check("protein_pct + carbs_pct + fat_pct = 100")
+@Check('protein_pct + carbs_pct + fat_pct = 100')
 export class User extends BaseUser {
   @Column({ nullable: true })
   country?: string;
@@ -41,4 +42,7 @@ export class User extends BaseUser {
 
   @Column({ type: 'smallint', default: 25 })
   fatPct: number;
+
+  @OneToMany(() => Day, (day) => day.user)
+  days: Day[];
 }
