@@ -1,34 +1,30 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
   Column,
+  ManyToOne,
+  Unique,
+  JoinColumn,
 } from 'typeorm';
-import { Meal } from 'src/meal/meal.entity';
-import { Dish } from 'src/dish/dish.entity';
-import { FoodItem } from 'src/foodItem/foodItem.entity';
+import { MealDish } from '../mealDish/mealDish.entity';
+import { FoodItem } from '../foodItem/foodItem.entity';
 
 @Entity()
-export class MealDishFoodItem {
+@Unique(['mealDish', 'foodItem']) // un ingrediente único por MealDish
+export class MealDishFooditem {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Meal, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'meal_id' })
-  meal: Meal;
+  @ManyToOne(() => MealDish, (mealDish) => mealDish.foodItems, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'meal_dish_id' })
+  mealDish: MealDish;
 
-  @ManyToOne(() => Dish, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'dish_id' })
-  dish: Dish;
-
-  @ManyToOne(() => FoodItem, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'food_item_id' })
+  @ManyToOne(() => FoodItem, { onDelete: 'RESTRICT' })
+  @JoinColumn({ name: 'food_item_barcode' })
   foodItem: FoodItem;
 
-  @Column('float')
+  @Column({ type: 'int' })
   quantity: number;
-
-  @Column({ type: 'varchar' })
-  unit: string;
 }
