@@ -30,36 +30,6 @@ export class DishController {
     return this.dishService.findAllByUser(userId);
   }
 
-  @Get(':id')
-  async findOneById(@Param('id') id: number): Promise<Dish | null> {
-    return this.dishService.findOneById(id);
-  }
-
-  @Post()
-  async createDish(@Body() createDishDto: CreateDishDto) {
-    return this.dishService.create(createDishDto);
-  }
-
-  @Put(':id')
-  async updateDish(
-    @Param('id') id: number,
-    @Body() updateDishDto: QueryDishDto,
-  ) {
-    return this.dishService.update(id, updateDishDto);
-  }
-
-  @Delete(':id')
-  async deleteDish(@Param('id') id: number) {
-    return this.dishService.delete(id);
-  }
-
-  @Post('create')
-  async createDishWithIngredients(
-    @Body() createDishWithIngredientsDto: CreateDishWithIngredientsDto,
-  ) {
-    return this.dishService.createWithIngredients(createDishWithIngredientsDto);
-  }
-
   @Get('user/:userId/plates')
   async getUserPlatesFormatted(@Param('userId') userId: number): Promise<
     Array<{
@@ -74,12 +44,67 @@ export class DishController {
     return this.dishService.findUserPlatesFormatted(userId);
   }
 
-  @Put(':id/food-items')
+  @Get(':id')
+  async findOneById(@Param('id') id: string): Promise<Dish | null> {
+    const dishId = parseInt(id, 10);
+    return this.dishService.findOneById(dishId);
+  }
+
+  // Get dish with ingredients in home screen format
+  @Get(':id/detailed')
+  async getDishWithIngredients(@Param('id') id: string): Promise<{
+    id: string;
+    name: string;
+    ingredients: Array<{
+      id: string;
+      name: string;
+      baseQuantity: number;
+      nutrientsPer100g: {
+        kcal: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        fiber: number;
+        satFat: number;
+      };
+    }>;
+    imageUrl?: string;
+  }> {
+    const dishId = parseInt(id, 10);
+    return this.dishService.getDishWithIngredients(dishId);
+  }
+
+  @Post()
+  async createDish(@Body() createDishDto: CreateDishDto) {
+    return this.dishService.create(createDishDto);
+  }
+
+  @Post('create')
+  async createDishWithIngredients(
+    @Body() createDishWithIngredientsDto: CreateDishWithIngredientsDto,
+  ) {
+    return this.dishService.createWithIngredients(createDishWithIngredientsDto);
+  }
+
+  @Put(':id')
+  async updateDish(
+    @Param('id') id: number,
+    @Body() updateDishDto: QueryDishDto,
+  ) {
+    return this.dishService.update(id, updateDishDto);
+  }
+
+  @Put(':id/ingredients')
   async updateIngredients(
     @Param('id') id: string,
     @Body() updateDishIngredientsDto: UpdateDishIngredientsDto,
   ) {
     const dishId = parseInt(id, 10);
     return this.dishService.updateIngredients(dishId, updateDishIngredientsDto);
+  }
+
+  @Delete(':id')
+  async deleteDish(@Param('id') id: number) {
+    return this.dishService.delete(id);
   }
 }

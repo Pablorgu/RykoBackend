@@ -36,6 +36,56 @@ export class DishService {
     return this.dishRepository.findOne({ where: { id } });
   }
 
+  // Obtain the dish with ingredients in home format
+  async getDishWithIngredients(id: number): Promise<{
+    id: string;
+    name: string;
+    ingredients: Array<{
+      id: string;
+      name: string;
+      baseQuantity: number;
+      nutrientsPer100g: {
+        kcal: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        fiber: number;
+        satFat: number;
+      };
+    }>;
+    imageUrl?: string;
+  }> {
+    const dish = await this.dishRepository.findOne({
+      where: { id },
+      relations: ['dishFoodItems', 'dishFoodItems.foodItem'],
+    });
+
+    if (!dish) {
+      throw new NotFoundException(`Dish with ID ${id} not found`);
+    }
+
+    const ingredients = (dish.dishFoodItems || []).map((dfi: DishFoodItem) => ({
+      id: dfi.foodItem.barcode.toString(),
+      name: dfi.foodItem.name,
+      baseQuantity: dfi.quantity,
+      nutrientsPer100g: {
+        kcal: dfi.foodItem.energyKcal || 0,
+        protein: dfi.foodItem.proteins || 0,
+        carbs: dfi.foodItem.carbohydrates || 0,
+        fat: dfi.foodItem.fat || 0,
+        fiber: dfi.foodItem.fiber || 0,
+        satFat: dfi.foodItem.saturatedFat || 0,
+      },
+    }));
+
+    return {
+      id: dish.id.toString(),
+      name: dish.name,
+      ingredients,
+      imageUrl: dish.image,
+    };
+  }
+
   //Filter dishes by any attribute
   async filterDishes(filters: Partial<Dish>): Promise<Dish[]> {
     try {
