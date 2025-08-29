@@ -1,12 +1,11 @@
-
-import { IsInt, IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateMealDto {
   @IsString()
   @IsNotEmpty()
-  time: string;
+  type: string;
 
-  @IsInt()
+  @IsNumber()
   @IsNotEmpty()
-  MealTypeId: number;
+  dayId: number;
 }

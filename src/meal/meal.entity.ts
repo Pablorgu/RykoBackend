@@ -1,13 +1,29 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  Unique,
+  JoinColumn,
+} from 'typeorm';
+import { Day } from '../day/day.entity';
+import { MealDish } from '../mealDish/mealDish.entity';
+import { MealTime } from './enums/mealTime.enum';
 
 @Entity()
+@Unique(['day', 'type']) // ← un único tipo por día
 export class Meal {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar' })
-  time: string;
+  @ManyToOne(() => Day, (day) => day.meals, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'day_id' })
+  day: Day;
 
-  dayMeals: any;
+  @Column({ type: 'enum', enum: MealTime })
+  type: MealTime;
+
+  @OneToMany(() => MealDish, (mealDish) => mealDish.meal, { cascade: true })
+  mealDishes: MealDish[];
 }

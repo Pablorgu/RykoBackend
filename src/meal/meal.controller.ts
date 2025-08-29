@@ -1,35 +1,48 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { MealService } from './meal.service';
+import { CreateMealDto } from './dto/createMeal.dto';
 import { Meal } from './meal.entity';
-import { CreateMealDto } from './dto/createmeal.dto';
-import { QueryMealDto } from './dto/querymeal.dto';
+import { UpdateMealDto } from './dto/updateMeal.dto';
+
 @Controller('meals')
 export class MealController {
-  constructor(private readonly mealService: MealService) { }
-
-
-  @Get('filter')
-  async filterMeals(@Query() filters: Partial<Meal>): Promise<Meal[]> {
-    return this.mealService.filter(filters);
+  constructor(private readonly mealService: MealService) {}
+  @Get()
+  async findAll(): Promise<Meal[]> {
+    return await this.mealService.findAll();
   }
 
   @Get(':id')
-  async findOneById(@Param('id') mealid: number): Promise<Meal | null> {
-    return this.mealService.findOneById(mealid);
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Meal> {
+    return await this.mealService.findOne(id);
   }
 
-  @Post()
-  async createMeal(@Body() createMealDto: CreateMealDto): Promise<Meal | null> {
-    return this.mealService.create(createMealDto);
+  @Get('day/:dayId')
+  async findByDay(
+    @Param('dayId', ParseIntPipe) dayId: number,
+  ): Promise<Meal[]> {
+    return await this.mealService.findByDay(dayId);
   }
 
-  @Put(':id')
-  async updateMeal(@Param('id') id: number, @Body() queryMealDto: QueryMealDto): Promise<Meal | null> {
-    return this.mealService.update(id, queryMealDto);
+  @Patch(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateMealDto: UpdateMealDto,
+  ): Promise<Meal> {
+    return await this.mealService.update(id, updateMealDto);
   }
 
   @Delete(':id')
-  async deleteMeal(@Param('id') id: number): Promise<string> {
-    return this.mealService.delete(id);
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return await this.mealService.remove(id);
   }
 }
