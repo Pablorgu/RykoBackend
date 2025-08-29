@@ -10,7 +10,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DishModule } from './dish/dish.module';
-import { MealModule } from './meal/meal.module';
 import { User } from './user/user.entity';
 import { BaseUser } from './user/baseUser.entity';
 import { Admin } from './user/admin.entity';
@@ -21,21 +20,14 @@ import { DishFoodItem } from './dishFoodItem/dishFoodItem.entity';
 import { Meal } from './meal/meal.entity';
 import { DayModule } from './day/day.module';
 import { Day } from './day/day.entity';
-import { DayMealModule } from './dayMeal/dayMeal.module';
-import { DayMeal } from './dayMeal/dayMeal.entity';
-import { DayUser } from './dayUser/dayUser.entity';
-import { DayUserModule } from './dayUser/dayUser.module';
-import { UserMealType } from './userMealType/userMealType.entity';
-import { UserMealTypeModule } from './userMealType/userMealType.module';
 import { MealDishFoodItemModule } from './mealDishFoodItem/mealDishFoodItem.module';
-import { MealDishFoodItem } from './mealDishFoodItem/mealDishFoodItem.entity';
-import { PantryModule } from './pantry/pantry.module';
-import { Pantry } from './pantry/pantry.entity';
-import { ShoppingModule } from './shoppinglist/shoppinglist.module';
-import { Shoppinglist } from './shoppinglist/shoppinglist.entity';
+import { MealDishFooditem } from './mealDishFoodItem/mealDishFoodItem.entity';
 import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
 import { UploadModule } from './upload/upload.module';
+import { MealModule } from './meal/meal.module';
+import { MealDish } from './mealDish/mealDish.entity';
+import { MealDishModule } from './mealDish/mealDish.module';
 
 @Module({
   imports: [
@@ -46,12 +38,8 @@ import { UploadModule } from './upload/upload.module';
     DishFoodItemModule,
     MealModule,
     DayModule,
-    DayMealModule,
-    DayUserModule,
-    UserMealTypeModule,
+    MealDishModule,
     MealDishFoodItemModule,
-    PantryModule,
-    ShoppingModule,
     AuthModule,
     UploadModule,
     ConfigModule.forRoot({
@@ -75,12 +63,8 @@ import { UploadModule } from './upload/upload.module';
         DishFoodItem,
         Meal,
         Day,
-        DayMeal,
-        DayUser,
-        UserMealType,
-        MealDishFoodItem,
-        Pantry,
-        Shoppinglist,
+        MealDish,
+        MealDishFooditem,
       ],
       synchronize: true,
       logging: true,
