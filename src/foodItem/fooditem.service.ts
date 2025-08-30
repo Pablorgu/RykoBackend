@@ -101,8 +101,36 @@ export class FoodItemService {
       return [];
     }
 
-    // Map the results to a simpler format
-    const results: SearchByNameFoodItemDto[] = data.products.map(
+    // Filter products to only include those with complete essential data
+    const filteredProducts = data.products.filter((prod: any) => {
+      const productName = prod.product_name || prod.product_name_en;
+      const hasValidName =
+        productName &&
+        productName.trim().length > 0 &&
+        productName.toLowerCase() !== 'unknown' &&
+        productName.toLowerCase() !== 'producto' &&
+        productName.toLowerCase() !== 'product' &&
+        !productName.toLowerCase().includes('sin nombre');
+
+      const hasValidNutriments =
+        prod.nutriments &&
+        typeof prod.nutriments['carbohydrates_100g'] === 'number' &&
+        typeof prod.nutriments['fat_100g'] === 'number' &&
+        typeof prod.nutriments['proteins_100g'] === 'number' &&
+        typeof prod.nutriments['energy-kcal_100g'] === 'number' &&
+        prod.nutriments['carbohydrates_100g'] >= 0 &&
+        prod.nutriments['fat_100g'] >= 0 &&
+        prod.nutriments['proteins_100g'] >= 0 &&
+        prod.nutriments['energy-kcal_100g'] >= 0;
+
+      const hasValidCode =
+        prod.code && prod.code.length > 0 && /^\d+$/.test(prod.code);
+
+      return hasValidName && hasValidNutriments && hasValidCode;
+    });
+
+    // Map the filtered results to a simpler format
+    const results: SearchByNameFoodItemDto[] = filteredProducts.map(
       (prod: any) => ({
         barcode: prod.code,
         name: prod.product_name || prod.product_name_en,
