@@ -29,6 +29,8 @@ interface AuthenticatedRequest extends Request {
 }
 
 class AddDishToMealDto {
+  @IsNumber()
+  @Min(0)
   dishId: number;
 }
 

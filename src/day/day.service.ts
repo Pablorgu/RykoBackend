@@ -328,13 +328,13 @@ export class DayService {
     const overrides: MealDishIngredientOverrideDto[] = [];
 
     if (dishFoodItems.length > 0) {
-      const mealDishFoodItems = dishFoodItems.map((dishFoodItem) =>
-        this.mealDishFoodItemRepo.create({
+      const mealDishFoodItems = dishFoodItems.map((dishFoodItem) => {
+        return this.mealDishFoodItemRepo.create({
           mealDish: savedMealDish,
           foodItem: dishFoodItem.foodItem,
           quantity: dishFoodItem.quantity,
-        }),
-      );
+        });
+      });
 
       await this.mealDishFoodItemRepo.save(mealDishFoodItems);
 
@@ -347,11 +347,12 @@ export class DayService {
     }
 
     // 7.Return the MealItemDto
-    return {
+    const result = {
       mealDishId: savedMealDish.id,
       dishId: dish.id,
       overrides,
     };
+    return result;
   }
 
   // Update the ingredient of a mealDish
