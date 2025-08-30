@@ -13,7 +13,6 @@ import { MealDishFooditem } from '../mealDishFoodItem/mealDishFoodItem.entity';
 import { FoodItem } from 'src/foodItem/foodItem.entity';
 
 @Entity()
-@Unique(['meal', 'dish'])
 export class MealDish {
   @PrimaryGeneratedColumn()
   id: number;
