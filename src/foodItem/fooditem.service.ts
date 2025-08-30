@@ -43,9 +43,18 @@ export class FoodItemService {
       //If the api returns a fooditem, save it into the database and return it
       console.log('data', data.product['nutriscore_grade']);
 
+      const normalizeProductName = (name: string): string => {
+        if (!name) return '';
+        return name
+          .toLowerCase()
+          .split(' ')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+      };
+
       const foodItem = {
         barcode: parseInt(data.product.code, 10),
-        name: data.product.product_name_en,
+        name: normalizeProductName(data.product.product_name_en),
 
         brand: data.product.brands,
         packageQuantity: +data.product.product_quantity,
