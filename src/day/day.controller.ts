@@ -20,7 +20,7 @@ import {
   DayDto,
 } from './dto/day.dto';
 import { Request } from 'express';
-import { IsNumber, IsPositive } from 'class-validator';
+import { IsNumber, Min } from 'class-validator';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -34,7 +34,7 @@ class AddDishToMealDto {
 
 class UpdateIngredientDto {
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   grams: number;
 }
 
