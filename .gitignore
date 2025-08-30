@@ -48,3 +48,4 @@ coverage/
 # Configuración del CLI de NestJS
 .nest-cli.json
 
+.env
