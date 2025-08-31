@@ -72,10 +72,9 @@ export class AuthService {
     return this.jwt.sign({ sub: u.id });
   }
 
-  async getUserFromToken(token: string): Promise<BaseUser> {
+  async getUserFromToken(UserId: number): Promise<BaseUser> {
     try {
-      const payload = this.jwt.verify(token);
-      const user = await this.repo.findOne({ where: { id: payload.sub } });
+      const user = await this.repo.findOne({ where: { id: UserId } });
       if (!user) throw new ConflictException('User not found');
       return user;
     } catch (error) {

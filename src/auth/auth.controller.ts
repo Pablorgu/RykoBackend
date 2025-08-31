@@ -8,6 +8,7 @@ import {
   Res,
   Param,
   Query,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './strategies/local.strategy';
@@ -15,6 +16,7 @@ import { RegisterLocalDto } from './dto/registerLocal.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { BaseUser } from 'src/user/baseUser.entity';
 import { Request, Response } from 'express';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -54,7 +56,9 @@ export class AuthController {
   }
 
   @Get('me')
-  async getUserFromToken(@Query('token') token: string) {
-    return this.auth.getUserFromToken(token);
+  @UseGuards(JwtAuthGuard)
+  async getUserFromToken(@Req() req: any) {
+    const userId = req.user.sub || req.user.id;
+    return this.auth.getUserFromToken(userId);
   }
 }
