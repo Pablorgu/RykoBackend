@@ -55,8 +55,8 @@ export class AuthController {
     );
   }
 
-  @Get('me')
   @UseGuards(JwtAuthGuard)
+  @Get('me')
   async getUserFromToken(@Req() req: any) {
     const userId = req.user.sub || req.user.id;
     return this.auth.getUserFromToken(userId);

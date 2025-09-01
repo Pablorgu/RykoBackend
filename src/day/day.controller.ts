@@ -44,6 +44,7 @@ class UpdateIngredientDto {
 export class DayController {
   constructor(private readonly dayService: DayService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(): Promise<Day[]> {
     return this.dayService.findAll();
@@ -56,16 +57,19 @@ export class DayController {
     return this.dayService.getDayDTO(userId, date);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('id/:id')
   async findOneById(@Param('id') id: number): Promise<Day> {
     return this.dayService.findOneById(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() dayData: Partial<Day>): Promise<Day> {
     return this.dayService.create(dayData);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -74,6 +78,7 @@ export class DayController {
     return this.dayService.update(id, dayData);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<string> {
     return this.dayService.remove(id);

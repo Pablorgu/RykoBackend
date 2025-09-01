@@ -28,11 +28,13 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll() {
     return this.userService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() CreateUserDto: CreateUserDto) {
     try {
@@ -57,11 +59,13 @@ export class UserController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('filter')
   async filter(@Query() filters: QueryUserDto): Promise<User[]> {
     return this.userService.filterUsers(filters);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOneById(@Param('id') id: number): Promise<User> {
     if (!id) {
@@ -70,6 +74,7 @@ export class UserController {
     return this.userService.findOneById(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -86,6 +91,7 @@ export class UserController {
     return this.userService.update(id, UpdateUserDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(@Param('id') id: number): Promise<string> {
     if (!id) {
@@ -99,6 +105,7 @@ export class UserController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put('update-profile/:id')
   async updateProfile(
     @Param('id') id: number,
@@ -142,8 +149,8 @@ export class UserController {
     }
   }
 
-  @Get('profile/:id')
   @UseGuards(JwtAuthGuard)
+  @Get('profile/:id')
   async getFullProfile(@Param('id') id: number): Promise<UserFullProfileDto> {
     if (!id) {
       throw new BadRequestException('Id is required');
