@@ -17,6 +17,26 @@ import { AuthGuard } from '@nestjs/passport';
 import { BaseUser } from 'src/user/baseUser.entity';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { GoogleAuthGuard } from './google-auth-guard';
+
+function decodeState(raw?: string): { redirect_uri?: string } | null {
+  if (!raw) return null;
+  try {
+    return JSON.parse(Buffer.from(raw, 'base64url').toString('utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function isAllowedRedirect(uri: string) {
+  const allow = (process.env.AUTH_REDIRECT_ALLOWLIST || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (process.env.DEFAULT_APP_REDIRECT)
+    allow.push(process.env.DEFAULT_APP_REDIRECT);
+  return allow.some((a) => uri.startsWith(a));
+}
 
 @Controller('auth')
 export class AuthController {
@@ -34,25 +54,39 @@ export class AuthController {
   }
 
   @Get('google')
-  @UseGuards(AuthGuard('google'))
+  @UseGuards(GoogleAuthGuard)
   googleAuth() {
-    // Initiates the Google OAuth2 login flow
-    // The user will be redirected to Google's login page
-    // After successful authentication, the user will be redirected to the callback URL
+    /* Passport automatically redirects to Google */
   }
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  googleCallback(@Req() req: Request, @Res() res: Response) {
-    if (!req.user) {
+  async googleCallback(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('state') state?: string,
+    @Query('redirect_uri') fallback?: string,
+  ) {
+    const user = req.user as BaseUser | undefined;
+    if (!user)
       return res.status(401).json({ message: 'Usuario no autenticado' });
+
+    const token = this.auth.tokenFor(user);
+
+    let redirectUri =
+      decodeState(state)?.redirect_uri ||
+      fallback ||
+      process.env.DEFAULT_APP_REDIRECT;
+
+    if (!redirectUri) return res.status(400).send('Missing redirect_uri');
+
+    if (!isAllowedRedirect(redirectUri)) {
+      return res.status(400).send('Invalid redirect');
     }
 
-    const token = this.auth.tokenFor(req.user as BaseUser);
-    // return res.redirect(`ryko://auth?token=${token}`);
-    return res.redirect(
-      `https://auth.expo.io/@blose/RykoFrontend?token=${token}`,
-    );
+    const url = new URL(redirectUri);
+    url.searchParams.set('token', token);
+    return res.redirect(url.toString());
   }
 
   @UseGuards(JwtAuthGuard)
