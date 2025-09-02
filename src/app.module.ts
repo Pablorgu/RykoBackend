@@ -28,6 +28,7 @@ import { UploadModule } from './upload/upload.module';
 import { MealModule } from './meal/meal.module';
 import { MealDish } from './mealDish/mealDish.entity';
 import { MealDishModule } from './mealDish/mealDish.module';
+import { RecommendationModule } from './recommendation/recommendation.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { MealDishModule } from './mealDish/mealDish.module';
     DayModule,
     MealDishModule,
     MealDishFoodItemModule,
+    RecommendationModule,
     AuthModule,
     UploadModule,
     ConfigModule.forRoot({
