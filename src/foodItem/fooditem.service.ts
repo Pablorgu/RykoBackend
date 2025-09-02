@@ -68,7 +68,9 @@ export class FoodItemService {
         imageFrontThumbUrl: data.product.image_front_thumb_url,
         imageFrontUrl: data.product.image_front_url,
         imageUrl: data.product.image_url,
-        nutriscore: data.product['nutriscore_grade'],
+        nutriscore: data.product['nutriscore_grade']?.match(/^[a-eA-E]$/)
+          ? data.product['nutriscore_grade']
+          : null,
         energyKcal: data.product.nutriments['energy-kcal_100g'],
         energyKj: data.product.nutriments['energy_100g'],
         carbohydrates: data.product.nutriments['carbohydrates_100g'],
