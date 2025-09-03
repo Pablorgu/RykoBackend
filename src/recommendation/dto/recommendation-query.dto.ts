@@ -29,14 +29,14 @@ export class RecommendationQueryDto {
   @Min(0.1)
   @Max(5)
   @Type(() => Number)
-  sMin?: number = 0.5;
+  sMin?: number = 0.1;
 
   @IsOptional()
   @IsNumber()
   @Min(0.1)
   @Max(10)
   @Type(() => Number)
-  sMax?: number = 2.5;
+  sMax?: number = 5;
 
   @IsOptional()
   @IsNumber()
