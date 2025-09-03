@@ -54,7 +54,11 @@ export class FoodItemService {
 
       const foodItem = {
         barcode: parseInt(data.product.code, 10),
-        name: normalizeProductName(data.product.product_name_en),
+        name: normalizeProductName(
+          data.product.generic_name_es || 
+          data.product.generic_name_en || 
+          data.product.generic_name
+        ),
 
         brand: data.product.brands,
         packageQuantity: +data.product.product_quantity,
