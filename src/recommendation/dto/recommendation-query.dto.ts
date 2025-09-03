@@ -4,8 +4,24 @@ import { Type, Transform } from 'class-transformer';
 export class RecommendationQueryDto {
   @IsOptional()
   @IsArray()
-  @Type(() => Number)
-  @Transform(({ value }) => Array.isArray(value) ? value : value?.split(',').map(Number))
+  @Transform(({ value }) => {
+    if (Array.isArray(value)) {
+      const result = value.map(Number).filter((num) => !isNaN(num));
+      return result;
+    }
+    if (typeof value === 'string') {
+      const result = value
+        .split(',')
+        .map((str) => parseInt(str.trim(), 10))
+        .filter((num) => !isNaN(num));
+      return result;
+    }
+    if (typeof value === 'number' && !isNaN(value)) {
+      const result = [value];
+      return result;
+    }
+    return [];
+  })
   exclude?: number[];
 
   @IsOptional()
