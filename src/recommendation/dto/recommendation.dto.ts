@@ -2,6 +2,7 @@ export interface MacroVector {
   protein: number;
   carbs: number;
   fat: number;
+  kcal: number;
 }
 
 export interface IngredientOverride {
