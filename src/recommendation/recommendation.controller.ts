@@ -32,7 +32,7 @@ export class RecommendationController {
     @Query() queryDto: RecommendationQueryDto,
     @Req() req: any,
   ): Promise<RecommendationResponseDto> {
-    const userId = req.user.sub;
+    const userId = req.user.id;
 
     const response =
       await this.recommendationService.getRecommendationWithDiagnostics(
