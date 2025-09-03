@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { RecommendationService } from './recommendation.service';
 import { RecommendationController } from './recommendation.controller';
-import { Meal } from '../meal/meal.entity';
-import { Dish } from '../dish/dish.entity';
-import { DishFoodItem } from '../dishFoodItem/dishFoodItem.entity';
-import { Day } from '../day/day.entity';
-import { User } from '../user/user.entity';
+import { MealModule } from '../meal/meal.module';
+import { UserModule } from '../user/user.module';
+import { DayModule } from '../day/day.module';
+import { DishModule } from '../dish/dish.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Meal, Dish, DishFoodItem, Day, User])],
+  imports: [MealModule, UserModule, DayModule, DishModule],
   controllers: [RecommendationController],
   providers: [RecommendationService],
   exports: [RecommendationService],
