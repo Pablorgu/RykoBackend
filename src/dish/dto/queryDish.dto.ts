@@ -1,4 +1,4 @@
-import { IsInt, IsOptional, IsString, IsUrl } from "class-validator";
+import { IsInt, IsOptional, IsString, IsUrl, ValidateIf } from "class-validator";
 
 export class QueryDishDto {
     @IsString()
@@ -9,6 +9,7 @@ export class QueryDishDto {
     @IsOptional()
     description?: string;
 
+    @ValidateIf((o) => o.image !== '' && o.image != null)
     @IsUrl()
     @IsOptional()
     image?: string;

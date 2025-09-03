@@ -34,9 +34,10 @@ export class CreateDishWithIngredientsDto {
   @IsString()
   description?: string;
 
-  @ValidateIf((o) => o.image !== '')
+  @ValidateIf((o) => o.image !== '' && o.image != null)
   @IsUrl()
   @IsString()
+  @IsOptional()
   image?: string;
 
   @IsInt()
