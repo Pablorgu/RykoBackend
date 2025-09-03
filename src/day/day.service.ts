@@ -495,4 +495,23 @@ export class DayService {
 
     return this.getDayDTO(userId, date);
   }
+
+  /**
+   * Get a day with its meals and food items
+   */
+  async getDayWithMealsAndFoodItems(
+    userId: number,
+    date: string,
+  ): Promise<Day | null> {
+    return this.dayRepo
+      .createQueryBuilder('day')
+      .leftJoinAndSelect('day.meals', 'meals')
+      .leftJoinAndSelect('meals.mealDishes', 'mealDishes')
+      .leftJoinAndSelect('mealDishes.dish', 'dish')
+      .leftJoinAndSelect('mealDishes.foodItems', 'foodItems')
+      .leftJoinAndSelect('foodItems.foodItem', 'foodItem')
+      .where('day.user.id = :userId', { userId })
+      .andWhere('day.date = :date', { date })
+      .getOne();
+  }
 }

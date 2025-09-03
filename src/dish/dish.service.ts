@@ -477,4 +477,13 @@ export class DishService {
       'Failed to update ingredients after multiple attempts',
     );
   }
+
+  async getDishesWithIngredientsByUser(userId: number): Promise<Dish[]> {
+    return this.dishRepository
+      .createQueryBuilder('dish')
+      .leftJoinAndSelect('dish.dishFoodItems', 'dishFoodItems')
+      .leftJoinAndSelect('dishFoodItems.foodItem', 'foodItem')
+      .where('dish.UserId = :userId', { userId })
+      .getMany();
+  }
 }

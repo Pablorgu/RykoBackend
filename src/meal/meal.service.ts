@@ -48,4 +48,23 @@ export class MealService {
     const meal = await this.findOne(id);
     await this.mealRepository.remove(meal);
   }
+
+  async getRecentlyConsumedDishes(
+    userId: number,
+    daysBack: number = 7,
+  ): Promise<Meal[]> {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - daysBack);
+
+    return this.mealRepository
+      .createQueryBuilder('meal')
+      .leftJoinAndSelect('meal.day', 'day')
+      .leftJoinAndSelect('meal.mealDishes', 'mealDishes')
+      .leftJoinAndSelect('mealDishes.dish', 'dish')
+      .where('day.user.id = :userId', { userId })
+      .andWhere('day.date >= :startDate', { startDate })
+      .andWhere('day.date < :endDate', { endDate })
+      .getMany();
+  }
 }
