@@ -123,6 +123,12 @@ export class DishService {
         );
       }
 
+      // Set default image if none provided or empty
+      if (!dishData.image || dishData.image.trim() === '') {
+        dishData.image =
+          'https://res.cloudinary.com/djnxh0gax/image/upload/v1756997344/plato-vacio_yqqaxl.jpg';
+      }
+
       const dish = this.dishRepository.create(dishData);
       await this.dishRepository.save(dish);
 
@@ -204,11 +210,18 @@ export class DishService {
           );
         }
 
+        // Set default image if none provided or empty
+        let imageUrl = dishData.image;
+        if (!imageUrl || imageUrl.trim() === '') {
+          imageUrl =
+            'https://res.cloudinary.com/djnxh0gax/image/upload/v1756997344/plato-vacio_yqqaxl.jpg';
+        }
+
         // Crear el plato
         const dish = queryRunner.manager.create(Dish, {
           name: dishData.name,
           description: dishData.description,
-          image: dishData.image,
+          image: imageUrl,
           UserId: dishData.UserId,
         });
 
