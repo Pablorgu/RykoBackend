@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -18,6 +19,7 @@ import { CreateDishWithIngredientsDto } from './dto/createDishWithIngredients.dt
 import { UpdateDishIngredientsDto } from './dto/updateDishIngredients.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { DishSummaryDto } from './dto/dishSummary.dto';
 
 @Controller('dishes')
 export class DishController {
@@ -119,5 +121,25 @@ export class DishController {
   @Delete(':id')
   async deleteDish(@Param('id') id: number) {
     return this.dishService.delete(id);
+  }
+
+  @Get('user/:userId/summary')
+  async findAllByUserSummary(
+    @Param('userId') userId: number,
+  ): Promise<DishSummaryDto[]> {
+    return this.dishService.findAllByUserSummary(userId);
+  }
+
+  @Get('filter/summary')
+  async filterDishesSummary(
+    @Query('name') name: string,
+    @Query('userId') userId: number,
+  ): Promise<DishSummaryDto[]> {
+    if (!name || !userId) {
+      throw new BadRequestException(
+        'Both name and userId query parameters are required',
+      );
+    }
+    return this.dishService.filterDishesSummary(name, userId);
   }
 }

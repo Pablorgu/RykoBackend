@@ -12,6 +12,7 @@ import { FoodItem } from '../foodItem/foodItem.entity';
 import { FoodItemService } from '../foodItem/fooditem.service';
 import { CreateDishWithIngredientsDto } from './dto/createDishWithIngredients.dto';
 import { UpdateDishIngredientsDto } from './dto/updateDishIngredients.dto';
+import { DishSummaryDto } from './dto/dishSummary.dto';
 
 @Injectable()
 export class DishService {
@@ -498,5 +499,83 @@ export class DishService {
       .leftJoinAndSelect('dishFoodItems.foodItem', 'foodItem')
       .where('dish.UserId = :userId', { userId })
       .getMany();
+  }
+
+  // Calculate total nutrients for a dish by summing all its ingredients
+  private calculateNutrients(dishFoodItems: DishFoodItem[]): {
+    kcal: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    fiber: number;
+    satFat: number;
+  } {
+    return dishFoodItems.reduce(
+      (total, item) => {
+        const multiplier = item.quantity / 100;
+        return {
+          kcal: total.kcal + ((item.foodItem.energyKcal || 0) * multiplier),
+          protein: total.protein + (item.foodItem.proteins * multiplier),
+          carbs: total.carbs + (item.foodItem.carbohydrates * multiplier),
+          fat: total.fat + (item.foodItem.fat * multiplier),
+          fiber: total.fiber + ((item.foodItem.fiber || 0) * multiplier),
+          satFat: total.satFat + (item.foodItem.saturatedFat * multiplier),
+        };
+      },
+      { kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, satFat: 0 }
+    );
+  }
+
+  // Get all dishes from user with precalculated nutrients (summary format)
+  async findAllByUserSummary(userId: number): Promise<DishSummaryDto[]> {
+    const dishes = await this.dishRepository.find({
+      where: { UserId: userId },
+      relations: ['dishFoodItems', 'dishFoodItems.foodItem'],
+    });
+
+    return dishes.map(dish => {
+      const nutrients = this.calculateNutrients(dish.dishFoodItems);
+      return {
+        id: dish.id.toString(),
+        name: dish.name,
+        imageUrl: dish.image || undefined,
+        nutrients: {
+          kcal: Math.round(nutrients.kcal * 100) / 100,
+          protein: Math.round(nutrients.protein * 100) / 100,
+          carbs: Math.round(nutrients.carbs * 100) / 100,
+          fat: Math.round(nutrients.fat * 100) / 100,
+          fiber: nutrients.fiber ? Math.round(nutrients.fiber * 100) / 100 : undefined,
+          satFat: nutrients.satFat ? Math.round(nutrients.satFat * 100) / 100 : undefined,
+        },
+      };
+    });
+  }
+
+  // Filter dishes with precalculated nutrients (summary format)
+  async filterDishesSummary(name: string, userId: number): Promise<DishSummaryDto[]> {
+    const dishes = await this.dishRepository
+      .createQueryBuilder('dish')
+      .leftJoinAndSelect('dish.dishFoodItems', 'dishFoodItems')
+      .leftJoinAndSelect('dishFoodItems.foodItem', 'foodItem')
+      .where('dish.UserId = :userId', { userId })
+      .andWhere('dish.name ILIKE :name', { name: `%${name}%` })
+      .getMany();
+
+    return dishes.map(dish => {
+      const nutrients = this.calculateNutrients(dish.dishFoodItems);
+      return {
+        id: dish.id.toString(),
+        name: dish.name,
+        imageUrl: dish.image || undefined,
+        nutrients: {
+          kcal: Math.round(nutrients.kcal * 100) / 100,
+          protein: Math.round(nutrients.protein * 100) / 100,
+          carbs: Math.round(nutrients.carbs * 100) / 100,
+          fat: Math.round(nutrients.fat * 100) / 100,
+          fiber: nutrients.fiber ? Math.round(nutrients.fiber * 100) / 100 : undefined,
+          satFat: nutrients.satFat ? Math.round(nutrients.satFat * 100) / 100 : undefined,
+        },
+      };
+    });
   }
 }
