@@ -58,15 +58,123 @@ export class UserService {
 
   //Crea un usuario
   async create(userData: Partial<User>): Promise<User> {
+    // Calculate automatic calorie goal if not provided
+    if (userData.calorieGoal === -1 && this.canCalculateCalories(userData)) {
+      userData.calorieGoal = this.calculateHarrisBenedictCalories(userData);
+    }
+
     const user = this.userRepository.create(userData);
     await this.userRepository.save(user);
     return user;
   }
 
+  // Check if we have the required data to calculate calories
+  private canCalculateCalories(userData: Partial<User>): boolean {
+    console.log('=== DEBUG canCalculateCalories ===');
+    console.log('userData:', {
+      weight: userData.weight,
+      height: userData.height,
+      birthdate: userData.birthdate,
+      gender: userData.gender,
+      aim: userData.aim,
+    });
+
+    const canCalculate = !!(
+      userData.weight &&
+      userData.height &&
+      userData.birthdate &&
+      userData.gender &&
+      userData.aim
+    );
+    console.log('canCalculate result:', canCalculate);
+    console.log('=== END DEBUG ===');
+
+    return canCalculate;
+  }
+
+  // Calculate calories using Harris-Benedict formula
+  private calculateHarrisBenedictCalories(userData: Partial<User>): number {
+    const weight = userData.weight!;
+    const height = userData.height!;
+    const birthdate = userData.birthdate!;
+    const gender = userData.gender!;
+    const aim = userData.aim;
+
+    // Calculate age from birthdate
+    const age = this.calculateAge(birthdate);
+
+    // Harris-Benedict formula for BMR (Basal Metabolic Rate)
+    let bmr: number;
+    if (gender === 'male') {
+      bmr = 88.362 + 13.397 * weight + 4.799 * height - 5.677 * age;
+    } else if (gender === 'female') {
+      bmr = 447.593 + 9.247 * weight + 3.098 * height - 4.33 * age;
+    } else {
+      // For 'other' gender, use average of male and female formulas
+      const maleBmr = 88.362 + 13.397 * weight + 4.799 * height - 5.677 * age;
+      const femaleBmr = 447.593 + 9.247 * weight + 3.098 * height - 4.33 * age;
+      bmr = (maleBmr + femaleBmr) / 2;
+    }
+
+    // Apply activity factor
+    const activityFactor = 1.55; // Moderate activity (3-5 days/week)
+    let totalCalories = bmr * activityFactor;
+
+    // Adjust based on weight aim
+    if (aim === 'weight_loss') {
+      totalCalories -= 500;
+    } else if (aim === 'weight_gain') {
+      totalCalories += 500;
+    }
+
+    return Math.round(totalCalories);
+  }
+
+  // Calculate age from birthdate string
+  private calculateAge(birthdate: string): number {
+    const today = new Date();
+    const birth = new Date(birthdate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birth.getDate())
+    ) {
+      age--;
+    }
+
+    return age;
+  }
+
   //Actualiza un usuario de uno o mas atributos
   async update(id: number, userData: Partial<User>): Promise<User> {
     const user = await this.findOneById(id);
-    await this.userRepository.update(id, userData);
+    let updateData = { ...userData };
+
+    // If calorieGoal is not provided or is -1, calculate it automatically
+    if (!userData.calorieGoal || userData.calorieGoal === -1) {
+      // Merge current user data with update data to check if we can calculate
+      // Ensure we have all required fields from the database
+      const mergedData = {
+        weight: userData.weight || user.weight,
+        height: userData.height || user.height,
+        birthdate: userData.birthdate || user.birthdate,
+        gender: userData.gender || user.gender,
+        aim: userData.aim || user.aim,
+      };
+
+      if (this.canCalculateCalories(mergedData)) {
+        updateData.calorieGoal =
+          this.calculateHarrisBenedictCalories(mergedData);
+      } else if (userData.calorieGoal === -1) {
+        // If we can't calculate and calorieGoal was explicitly set to -1, exclude it from update
+        const { calorieGoal, ...restData } = updateData;
+        updateData = restData;
+      }
+    }
+
+    await this.userRepository.update(id, updateData);
     return this.findOneById(id);
   }
 
