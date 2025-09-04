@@ -12,6 +12,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 import { AuthController } from './auth.controller';
 import { UserModule } from 'src/user/user.module';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { PasswordResetModule } from './password-reset.module';
 
 @Module({
   imports: [
@@ -21,15 +22,22 @@ import { GoogleStrategy } from './strategies/google.strategy';
     UserModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: cfg => ({
+      useFactory: (cfg) => ({
         secret: cfg.get('JWT_SECRET'),
         signOptions: { expiresIn: '15m' },
       }),
       inject: [ConfigService],
     }),
+    PasswordResetModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, JwtAuthGuard, GoogleStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    JwtAuthGuard,
+    GoogleStrategy,
+  ],
   exports: [AuthService],
 })
-export class AuthModule { }
+export class AuthModule {}
