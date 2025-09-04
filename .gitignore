@@ -49,3 +49,4 @@ coverage/
 .nest-cli.json
 
 .env
+.env
