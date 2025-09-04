@@ -53,7 +53,7 @@ import { PasswordReset } from './auth/password-reset.entity';
       envFilePath: '.env',
     }),
     TypeOrmModule.forRoot({
-      type: 'mariadb',
+      type: 'mysql',
       host: process.env.DATABASE_HOST,
       port: Number(process.env.DATABASE_PORT),
       username: process.env.DATABASE_USER,
@@ -72,9 +72,17 @@ import { PasswordReset } from './auth/password-reset.entity';
         MealDishFooditem,
         PasswordReset,
       ],
-      synchronize: true,
+      synchronize: false,
       logging: true,
       namingStrategy: new SnakeNamingStrategy(),
+      ssl: {
+        rejectUnauthorized: false, // Para Aiven MySQL
+      },
+      extra: {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      },
     }),
   ],
   controllers: [],
