@@ -10,7 +10,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { MealService } from './meal.service';
-import { CreateMealDto } from './dto/createMeal.dto';
 import { Meal } from './meal.entity';
 import { UpdateMealDto } from './dto/updateMeal.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
