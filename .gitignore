@@ -50,3 +50,4 @@ coverage/
 
 .env
 .env
+src/certs/ca.pem
