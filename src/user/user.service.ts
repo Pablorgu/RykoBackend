@@ -70,15 +70,6 @@ export class UserService {
 
   // Check if we have the required data to calculate calories
   private canCalculateCalories(userData: Partial<User>): boolean {
-    console.log('=== DEBUG canCalculateCalories ===');
-    console.log('userData:', {
-      weight: userData.weight,
-      height: userData.height,
-      birthdate: userData.birthdate,
-      gender: userData.gender,
-      aim: userData.aim,
-    });
-
     const canCalculate = !!(
       userData.weight &&
       userData.height &&
@@ -86,8 +77,6 @@ export class UserService {
       userData.gender &&
       userData.aim
     );
-    console.log('canCalculate result:', canCalculate);
-    console.log('=== END DEBUG ===');
 
     return canCalculate;
   }
@@ -191,7 +180,6 @@ export class UserService {
     if (!user) {
       throw new Error(`User with id ${id} not found`);
     }
-    console.log('user:', JSON.stringify(user, null, 2));
     return {
       id: user.id,
       username: user.username,
