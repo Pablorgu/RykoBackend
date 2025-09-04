@@ -34,7 +34,7 @@ import { PasswordReset } from './auth/password-reset.entity';
 import configuration from './config/configuration';
 
 function loadCA(cs: ConfigService): string | undefined {
-  const path = cs.get<string>('DATABASE_SSL_CA'); // ej: /app/certs/aiven-ca.pem
+  const path = cs.get<string>('DATABASE_SSL_CA') || './certs/aiven-ca.pem';
   if (path && fs.existsSync(path)) return fs.readFileSync(path, 'utf8');
   return undefined;
 }
