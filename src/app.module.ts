@@ -29,6 +29,8 @@ import { MealModule } from './meal/meal.module';
 import { MealDish } from './mealDish/mealDish.entity';
 import { MealDishModule } from './mealDish/mealDish.module';
 import { RecommendationModule } from './recommendation/recommendation.module';
+import { PasswordResetModule } from './auth/password-reset.module';
+import { PasswordReset } from './auth/password-reset.entity';
 
 @Module({
   imports: [
@@ -44,6 +46,7 @@ import { RecommendationModule } from './recommendation/recommendation.module';
     RecommendationModule,
     AuthModule,
     UploadModule,
+    PasswordResetModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
@@ -67,6 +70,7 @@ import { RecommendationModule } from './recommendation/recommendation.module';
         Day,
         MealDish,
         MealDishFooditem,
+        PasswordReset,
       ],
       synchronize: true,
       logging: true,
