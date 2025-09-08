@@ -55,40 +55,43 @@ export class FoodItemService {
       const foodItem = {
         barcode: parseInt(data.product.code, 10),
         name: normalizeProductName(
-          data.product.generic_name_es || 
-          data.product.generic_name_en || 
-          data.product.generic_name
+          data.product.generic_name_es ||
+            data.product.generic_name_en ||
+            data.product.generic_name ||
+            data.product.product_name_es ||
+            data.product.product_name,
         ),
 
-        brand: data.product.brands,
-        packageQuantity: +data.product.product_quantity,
-        allergens: data.product.allergens,
-        ingredients: data.product.ingredients_text,
-        glutenFree: data.product.labels.includes('No gluten') ? true : false,
-        vegan: data.product.labels.includes('vegan') ? true : false,
-        vegetarian: data.product.labels.includes('vegetarian') ? true : false,
-        palmOil: data.product.labels.includes('palm oil') ? true : false,
-        imageFrontSmallUrl: data.product.image_front_small_url,
-        imageFrontThumbUrl: data.product.image_front_thumb_url,
-        imageFrontUrl: data.product.image_front_url,
-        imageUrl: data.product.image_url,
+        brand: data.product.brands || '',
+        packageQuantity: +data.product.product_quantity || 0,
+        allergens: data.product.allergens || '',
+        ingredients: data.product.ingredients_text || '',
+        glutenFree: data.product.labels?.includes('No gluten') ? true : false,
+        vegan: data.product.labels?.includes('vegan') ? true : false,
+        vegetarian: data.product.labels?.includes('vegetarian') ? true : false,
+        palmOil: data.product.labels?.includes('palm oil') ? true : false,
+        imageFrontSmallUrl: data.product.image_front_small_url || '',
+        imageFrontThumbUrl: data.product.image_front_thumb_url || '',
+        imageFrontUrl: data.product.image_front_url || '',
+        imageUrl: data.product.image_url || '',
         nutriscore: data.product['nutriscore_grade']?.match(/^[a-eA-E]$/)
           ? data.product['nutriscore_grade']
           : null,
-        energyKcal: data.product.nutriments['energy-kcal_100g'],
-        energyKj: data.product.nutriments['energy_100g'],
-        carbohydrates: data.product.nutriments['carbohydrates_100g'],
-        fat: data.product.nutriments['fat_100g'],
-        proteins: data.product.nutriments['proteins_100g'],
-        saturatedFat: data.product.nutriments['saturated-fat_100g'],
-        fiber: data.product.nutriments['fiber_100g'],
-        salt: data.product.nutriments['salt_100g'],
-        alcohol: data.product.nutriments.alcohol,
-        sodium: data.product.nutriments['sodium_100g'],
+        energyKcal: data.product.nutriments?.['energy-kcal_100g'] || 0,
+        energyKj: data.product.nutriments?.['energy_100g'] || 0,
+        carbohydrates: data.product.nutriments?.['carbohydrates_100g'] || 0,
+        fat: data.product.nutriments?.['fat_100g'] || 0,
+        proteins: data.product.nutriments?.['proteins_100g'] || 0,
+        saturatedFat: data.product.nutriments?.['saturated-fat_100g'] || 0,
+        fiber: data.product.nutriments?.['fiber_100g'] || 0,
+        salt: data.product.nutriments?.['salt_100g'] || 0,
+        alcohol: data.product.nutriments?.alcohol || 0,
+        sodium: data.product.nutriments?.['sodium_100g'] || 0,
         sugars:
-          data.product.nutriments['sugars_100g'] ||
-          data.product.nutriments_estimated['sugars_100g'],
-        novaGroup: data.product.nova_group,
+          data.product.nutriments?.['sugars_100g'] ||
+          data.product.nutriments_estimated?.['sugars_100g'] ||
+          0,
+        novaGroup: data.product.nova_group || 0,
         additives: data.product.additives_tags
           ? data.product.additives_tags.join(',')
           : null,
