@@ -63,25 +63,6 @@ export class DayService {
     private readonly dishFoodItemService: DishFoodItemService,
     private readonly foodItemService: FoodItemService,
   ) {}
-
-  //Create a new Day
-  async create(dayData: Partial<Day>): Promise<Day> {
-    if (!dayData.date) {
-      throw new BadRequestException('La fecha es requerida');
-    }
-
-    const dateStr = toISODate(dayData.date);
-    if (!isValidDateString(dateStr)) {
-      throw new BadRequestException('Fecha inválida');
-    }
-
-    const newDay = this.dayRepo.create({
-      ...dayData,
-      date: dateStr,
-    });
-    return await this.dayRepo.save(newDay);
-  }
-
   // Get all Days ordered by date
   async findAll(): Promise<Day[]> {
     return await this.dayRepo.find({

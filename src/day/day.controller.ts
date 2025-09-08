@@ -64,12 +64,6 @@ export class DayController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post()
-  async create(@Body() dayData: Partial<Day>): Promise<Day> {
-    return this.dayService.create(dayData);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async update(
     @Param('id') id: number,

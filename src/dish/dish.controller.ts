@@ -123,6 +123,7 @@ export class DishController {
     return this.dishService.delete(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('user/:userId/summary')
   async findAllByUserSummary(
     @Param('userId') userId: number,
@@ -130,6 +131,7 @@ export class DishController {
     return this.dishService.findAllByUserSummary(userId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('filter/summary')
   async filterDishesSummary(
     @Query('name') name: string,
