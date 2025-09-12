@@ -1,11 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Meal } from '../meal/meal.entity';
-import { Dish } from '../dish/dish.entity';
-import { Day } from '../day/day.entity';
-import { User } from '../user/user.entity';
-import { MealService } from '../meal/meal.service';
 import {
   MacroVector,
   RecommendationDto,
@@ -13,12 +6,9 @@ import {
   IngredientOverride,
 } from './dto/recommendation.dto';
 import { RecommendationQueryDto } from './dto/recommendation-query.dto';
-import { MealDish } from '../mealDish/mealDish.entity';
 import { DishFoodItem } from '../dishFoodItem/dishFoodItem.entity';
-import { MealDishFooditem } from '../mealDishFoodItem/mealDishFoodItem.entity';
-import { UserService } from 'src/user/user.service';
-import { DayService } from 'src/day/day.service';
 import { DishService } from 'src/dish/dish.service';
+import { MealService } from 'src/meal/meal.service';
 
 interface DishVector {
   dishId: number;
@@ -42,139 +32,9 @@ export class RecommendationService {
 
   constructor(
     private readonly mealService: MealService,
-    private readonly userService: UserService,
-    private readonly dayService: DayService,
+
     private readonly dishService: DishService,
   ) {}
-
-  /**
-   * Calculates daily macro targets from user profile
-   */
-  private async calculateDailyTargets(userId: number): Promise<MacroVector> {
-    const user = await this.userService.findOneById(userId);
-
-    if (!user || !user.calorieGoal) {
-      // Default values if no profile is configured
-      const defaultTargets = { protein: 150, carbs: 250, fat: 60 };
-      return {
-        ...defaultTargets,
-        kcal:
-          defaultTargets.protein * 4 +
-          defaultTargets.carbs * 4 +
-          defaultTargets.fat * 9,
-      };
-    }
-
-    const totalCalories = user.calorieGoal;
-    const proteinPct = user.proteinPct || 30;
-    const carbsPct = user.carbsPct || 45;
-    const fatPct = user.fatPct || 25;
-
-    // Calculate macro grams from calories and percentages
-    // Protein: 4 kcal/g, Carbohydrates: 4 kcal/g, Fat: 9 kcal/g
-    const proteinCalories = (totalCalories * proteinPct) / 100;
-    const carbsCalories = (totalCalories * carbsPct) / 100;
-    const fatCalories = (totalCalories * fatPct) / 100;
-
-    return {
-      protein: Math.round(proteinCalories / 4),
-      carbs: Math.round(carbsCalories / 4),
-      fat: Math.round(fatCalories / 9),
-      kcal: totalCalories,
-    };
-  }
-
-  /**
-   * Calculates remaining macros for a specific day
-   */
-  async getRemainingForDay(userId: number, date: string): Promise<MacroVector> {
-    // Get day with meals and food items
-    const day = await this.dayService.getDayWithMealsAndFoodItems(userId, date);
-
-    const meals = day?.meals || [];
-
-    // Get daily targets from user profile
-    const dailyTargets = await this.calculateDailyTargets(userId);
-
-    const consumed = meals.reduce(
-      (acc: MacroVector, meal) => {
-        // Validate that meal.mealDishes exists
-        if (!meal.mealDishes || !Array.isArray(meal.mealDishes)) {
-          return acc;
-        }
-
-        const mealMacros = meal.mealDishes.reduce(
-          (mealAcc: MacroVector, mealDish: MealDish) => {
-            // Validate that mealDish.dish and mealDish.dish.dishFoodItems exist
-            if (
-              !mealDish.dish ||
-              !mealDish.dish.dishFoodItems ||
-              !Array.isArray(mealDish.dish.dishFoodItems)
-            ) {
-              return mealAcc;
-            }
-            // Calculate dish macros
-            const dishMacros = mealDish.dish.dishFoodItems.reduce(
-              (dishAcc: MacroVector, item: DishFoodItem) => {
-                const foodItem = item.foodItem;
-                const quantity = item.quantity / 100; // Convert to per 100g
-
-                return {
-                  protein: dishAcc.protein + foodItem.proteins * quantity,
-                  carbs: dishAcc.carbs + foodItem.carbohydrates * quantity,
-                  fat: dishAcc.fat + foodItem.fat * quantity,
-                  kcal: 0, // Will be calculated later
-                };
-              },
-              { protein: 0, carbs: 0, fat: 0, kcal: 0 },
-            );
-
-            // Add overrides from mealDishFoodItems if they exist
-            mealDish.foodItems?.forEach((item: MealDishFooditem) => {
-              const foodItem = item.foodItem;
-              const quantity = item.quantity / 100;
-              dishMacros.protein += foodItem.proteins * quantity;
-              dishMacros.carbs += foodItem.carbohydrates * quantity;
-              dishMacros.fat += foodItem.fat * quantity;
-            });
-
-            // Calculate kcal for dish macros
-            dishMacros.kcal =
-              dishMacros.protein * 4 +
-              dishMacros.carbs * 4 +
-              dishMacros.fat * 9;
-
-            return {
-              protein: mealAcc.protein + dishMacros.protein,
-              carbs: mealAcc.carbs + dishMacros.carbs,
-              fat: mealAcc.fat + dishMacros.fat,
-              kcal: mealAcc.kcal + dishMacros.kcal,
-            };
-          },
-          { protein: 0, carbs: 0, fat: 0, kcal: 0 },
-        );
-
-        return {
-          protein: acc.protein + mealMacros.protein,
-          carbs: acc.carbs + mealMacros.carbs,
-          fat: acc.fat + mealMacros.fat,
-          kcal: acc.kcal + mealMacros.kcal,
-        };
-      },
-      { protein: 0, carbs: 0, fat: 0, kcal: 0 },
-    );
-
-    const remaining = {
-      protein: Math.max(0, dailyTargets.protein - consumed.protein),
-      carbs: Math.max(0, dailyTargets.carbs - consumed.carbs),
-      fat: Math.max(0, dailyTargets.fat - consumed.fat),
-    };
-
-    return {
-      ...remaining,
-      kcal: remaining.protein * 4 + remaining.carbs * 4 + remaining.fat * 9,
-    };
-  }
 
   /**
    * Calculates optimal scale factor and resulting error
@@ -342,8 +202,12 @@ export class RecommendationService {
     date: string,
     queryDto: RecommendationQueryDto,
   ): Promise<RecommendationResponseDto> {
-    // Get remaining macros for the day
-    const remaining = await this.getRemainingForDay(userId, date);
+    const remaining = {
+      protein: queryDto.remainingProtein || 0,
+      carbs: queryDto.remainingCarbs || 0,
+      fat: queryDto.remainingFat || 0,
+      kcal: queryDto.remainingKcal || 0,
+    };
 
     // Early-return if remaining macros are almost zero (day practically fulfilled)
     if (remaining.protein <= 1 && remaining.carbs <= 1 && remaining.fat <= 1) {

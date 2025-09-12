@@ -44,4 +44,28 @@ export class RecommendationQueryDto {
   @Max(50)
   @Type(() => Number)
   roundGramsTo?: number = 5;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  remainingKcal?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  remainingProtein?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  remainingCarbs?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  remainingFat?: number;
 }
