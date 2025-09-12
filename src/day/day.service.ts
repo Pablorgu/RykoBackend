@@ -379,8 +379,11 @@ export class DayService {
         // Apply scale factor to original quantity
         const scaledQuantity = Math.round(dishFoodItem.quantity * scaleFactor);
         // Ensure minimum of 1g if base quantity is > 0
-        const finalQuantity = dishFoodItem.quantity > 0 && scaledQuantity === 0 ? 1 : scaledQuantity;
-        
+        const finalQuantity =
+          dishFoodItem.quantity > 0 && scaledQuantity === 0
+            ? 1
+            : scaledQuantity;
+
         return this.mealDishFoodItemRepo.create({
           mealDish: savedMealDish,
           foodItem: dishFoodItem.foodItem,
@@ -461,10 +464,6 @@ export class DayService {
       relations: ['mealDish', 'foodItem'],
     });
 
-    console.log('mealDishFoodItem encontrado:', mealDishFoodItem);
-    console.log('mealDishFoodItem.id:', mealDishFoodItem?.id);
-    console.log('grams a actualizar:', grams);
-
     if (!mealDishFoodItem) {
       throw new NotFoundException(
         `Ingrediente con ID ${ingredientId} no encontrado en el MealDish ${mealDishId}`,
@@ -478,8 +477,6 @@ export class DayService {
         quantity: grams,
       },
     );
-
-    console.log('Resultado de actualización:', updateResult);
 
     // 6. Return the override updated
     return {

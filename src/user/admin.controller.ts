@@ -33,7 +33,6 @@ export class AdminController {
   @Post()
   async create(@Body() CreateAdminDto: CreateAdminDto) {
     try {
-      console.log('Este es el dto del admin:', CreateAdminDto);
       // Check if the email is already registered
       const existingAdmin = await this.adminService.findOneByEmail(
         CreateAdminDto.email,
@@ -41,7 +40,6 @@ export class AdminController {
       if (existingAdmin) {
         throw new ConflictException('Admin with this email already exists');
       }
-      console.log('No existe el email');
 
       // Proceed to create the admin
       return this.adminService.create(CreateAdminDto);

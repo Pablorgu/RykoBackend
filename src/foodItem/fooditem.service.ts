@@ -40,8 +40,6 @@ export class FoodItemService {
           `Food item with barcode ${barcode} not found`,
         );
       }
-      //If the api returns a fooditem, save it into the database and return it
-      console.log('data', data.product['nutriscore_grade']);
 
       const normalizeProductName = (name: string): string => {
         if (!name) return '';
@@ -98,7 +96,6 @@ export class FoodItemService {
         lastCheck: new Date(),
         isPersonal: false,
       };
-      console.log('FoodItem data:', foodItem);
       const newFoodItem = this.foodItemRepository.create(foodItem);
       await this.foodItemRepository.save(newFoodItem);
       return newFoodItem;
@@ -107,7 +104,6 @@ export class FoodItemService {
 
   //Get a list of items from de OpenFoodFacts API by its name
   async searchProducts(query: string): Promise<any[]> {
-    console.log('query', query);
     const response = await fetch(
       `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&json=1`,
       // 'https://world.openfoodfacts.org/cgi/search.pl?search_terms=arroz&json=1',

@@ -38,7 +38,6 @@ export class UserController {
   @Post()
   async create(@Body() CreateUserDto: CreateUserDto) {
     try {
-      console.log('Este es el dto del usuario:', CreateUserDto);
       // Check if the email is already registered
       const existingUser = await this.userService.findOneByEmail(
         CreateUserDto.email,
@@ -121,7 +120,6 @@ export class UserController {
     }
 
     try {
-      console.log(`DTO recibido:`, updateProfileDto);
       const updateData = {
         ...(updateProfileDto.username && {
           username: updateProfileDto.username,
@@ -139,7 +137,6 @@ export class UserController {
         carbsPct: updateProfileDto.carbsPct,
         fatPct: updateProfileDto.fatPct,
       };
-      console.log('datos a actualizar:', updateData);
 
       return await this.userService.update(id, updateData);
     } catch (error) {
