@@ -24,7 +24,7 @@ import { PasswordResetModule } from './password-reset.module';
       imports: [ConfigModule],
       useFactory: (cfg) => ({
         secret: cfg.get('JWT_SECRET'),
-        signOptions: { expiresIn: '15m' },
+        signOptions: { expiresIn: process.env.JWT_EXPIRES_IN ?? '15m' },
       }),
       inject: [ConfigService],
     }),
