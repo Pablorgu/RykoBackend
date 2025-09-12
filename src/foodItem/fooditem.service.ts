@@ -33,6 +33,15 @@ export class FoodItemService {
       const response = await fetch(
         `https://world.openfoodfacts.org/api/v2/product/${barcode}`,
       );
+
+      // Validate that the response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new NotFoundException(
+          `Food item with barcode ${barcode} not found - API returned HTML instead of JSON`,
+        );
+      }
+
       const data = await response.json();
       //If the api returns an error, return null
       if (data.status === 0) {
@@ -108,6 +117,13 @@ export class FoodItemService {
       `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&json=1`,
       // 'https://world.openfoodfacts.org/cgi/search.pl?search_terms=arroz&json=1',
     );
+
+    // Validar que la respuesta sea JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      return [];
+    }
+
     const data = await response.json();
 
     // Be sure that the response is an array
