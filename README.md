@@ -1,43 +1,65 @@
-<h1>Ryko - Backend API</h1>
+# Ryko Backend API
 
-<h2>Description</h2>
-<p>Ryko is a comprehensive nutrition management application that I am developing as my Bachelor's Thesis project.</p>
+## Overview
 
-<h2>Features</h2>
-<ul>
-  <li><strong>Easy login</strong> via Google or email.</li>
-  <li><strong>Personalized nutrition management</strong> based on user-created dishes.</li>
-  <li><strong>Graphical visualization</strong> of nutritional information, fully tailored to the user's needs.</li>
-  <li><strong>Smart recommendations</strong> based on user habits and preferences to improve nutrition.</li>
-</ul>
-<hr>
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+Ryko is a comprehensive nutrition management system designed to provide personalized dietary recommendations and nutritional tracking capabilities. This backend API serves as the core service layer, implementing advanced algorithms for meal planning, nutritional analysis, and intelligent food recommendations.
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Technical Architecture
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+### Framework & Technologies
+- **Framework**: NestJS (Node.js)
+- **Language**: TypeScript
+- **Database**: MariaDB/MySQL with TypeORM
+- **Authentication**: JWT + Google OAuth 2.0
+- **File Storage**: Cloudinary
+- **Email Service**: SMTP integration
 
-## Description
+### Key Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+#### Authentication & Authorization
+- Multi-provider authentication (Local, Google OAuth)
+- JWT-based session management
+- Password reset functionality with rate limiting
+- Role-based access control (User/Admin)
+
+#### Nutrition Management
+- Comprehensive food item database integration
+- Custom dish creation and management
+- Meal planning and tracking
+- Macro and micronutrient calculation
+
+#### Intelligent Recommendations
+- Machine learning-based dish recommendations
+- Personalized nutrition targets based on user profiles
+- Dietary preference and restriction handling
+- Historical consumption pattern analysis
+
+#### Data Management
+- RESTful API design
+- Comprehensive data validation
+- Optimized database queries
+- Image upload and processing
+
+## System Requirements
+
+- Node.js >= 16.x
+- MariaDB/MySQL >= 10.x
+- npm >= 8.x
+
+## Environment Configuration
+
+Copy the example environment file and configure the required variables:
+
+```bash
+cp .env.example .env
+```
+
+### Required Environment Variables
+
+- **Database**: `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_NAME`
+- **Authentication**: `JWT_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
+- **Email**: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`
+- **Storage**: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
 
 ## Project setup
 
