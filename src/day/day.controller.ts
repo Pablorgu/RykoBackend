@@ -20,7 +20,7 @@ import {
   DayDto,
 } from './dto/day.dto';
 import { Request } from 'express';
-import { IsNumber, Min } from 'class-validator';
+import { IsNumber, Min, IsOptional } from 'class-validator';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -38,6 +38,15 @@ class UpdateIngredientDto {
   @IsNumber()
   @Min(0)
   grams: number;
+}
+
+class AddDishWithScaleDto {
+  @IsNumber()
+  @Min(0)
+  dishId: number;
+
+  @IsNumber()
+  scaleFactor: number = 1.0;
 }
 
 @Controller('day')
@@ -79,6 +88,24 @@ export class DayController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post(':date/meals/:type/dishes/with-scale')
+  async addDishToMealWithScale(
+    @Req() req: AuthenticatedRequest,
+    @Param('date') date: string,
+    @Param('type') type: MealTime,
+    @Body() addDishWithScaleDto: AddDishWithScaleDto,
+  ): Promise<MealItemDto> {
+    const userId = req.user.id;
+    return this.dayService.addDishWithScale(
+      userId,
+      date,
+      type,
+      addDishWithScaleDto.dishId,
+      addDishWithScaleDto.scaleFactor || 1.0,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post(':date/meals/:type/dishes')
   async addDishToMeal(
     @Param('date') date: string,
@@ -89,6 +116,7 @@ export class DayController {
     const userId = req.user.id;
     return this.dayService.addDish(userId, date, type, addDishDto.dishId);
   }
+
   @UseGuards(JwtAuthGuard)
   @Patch(':date/meals/:type/dishes/:mealDishId/ingredients/:ingredientId')
   async updateIngredient(

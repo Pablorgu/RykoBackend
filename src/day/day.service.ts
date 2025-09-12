@@ -336,6 +336,77 @@ export class DayService {
     return result;
   }
 
+  async addDishWithScale(
+    userId: number,
+    date: string,
+    type: MealTime,
+    dishId: number,
+    scaleFactor: number = 1.0,
+  ): Promise<MealItemDto> {
+    // 1. Make sure the day exist with the relation meals
+    const day = await this.ensureDay(userId, date);
+
+    // 2. Search the Meal corresponding by day and type
+    const meal = day.meals?.find((m) => m.type === type);
+    if (!meal) {
+      throw new BadRequestException(
+        `No existe meal de tipo ${type} en ese día`,
+      );
+    }
+
+    // 3. Validate that the Dish exists using the service
+    const dish = await this.dishService.findOneById(dishId);
+    if (!dish) {
+      throw new NotFoundException(`Dish con ID ${dishId} no encontrado`);
+    }
+
+    // 4. Obtain the DishFoodItems associated to the Dish
+    const dishFoodItems = await this.dishFoodItemService.findByDishId(dishId);
+
+    // 5. Create the MealDish
+    const mealDish = this.mealDishRepo.create({
+      meal: { id: meal.id },
+      dish: { id: dish.id },
+      position: 0,
+    });
+    const savedMealDish = await this.mealDishRepo.save(mealDish);
+
+    // 6. Copy all the DishFoodItems as MealDishFoodItems with scale factor applied
+    const overrides: MealDishIngredientOverrideDto[] = [];
+
+    if (dishFoodItems.length > 0) {
+      const mealDishFoodItems = dishFoodItems.map((dishFoodItem) => {
+        // Apply scale factor to original quantity
+        const scaledQuantity = Math.round(dishFoodItem.quantity * scaleFactor);
+        // Ensure minimum of 1g if base quantity is > 0
+        const finalQuantity = dishFoodItem.quantity > 0 && scaledQuantity === 0 ? 1 : scaledQuantity;
+        
+        return this.mealDishFoodItemRepo.create({
+          mealDish: savedMealDish,
+          foodItem: dishFoodItem.foodItem,
+          quantity: finalQuantity,
+        });
+      });
+
+      await this.mealDishFoodItemRepo.save(mealDishFoodItems);
+
+      overrides.push(
+        ...mealDishFoodItems.map((mealDishFoodItem) => ({
+          ingredientId: mealDishFoodItem.foodItem.barcode,
+          grams: mealDishFoodItem.quantity,
+        })),
+      );
+    }
+
+    // 7. Return the MealItemDto
+    const result = {
+      mealDishId: savedMealDish.id,
+      dishId: dish.id,
+      overrides,
+    };
+    return result;
+  }
+
   // Update the ingredient of a mealDish
   async updateIngredient(
     userId: number,
