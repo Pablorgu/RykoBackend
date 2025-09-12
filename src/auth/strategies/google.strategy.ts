@@ -25,7 +25,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     done: Function,
   ) {
     const email = profile.emails?.[0]?.value;
-    console.log('Google profile:', profile);
     if (!email) {
       throw new Error('Google email is required');
     }

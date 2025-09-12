@@ -181,8 +181,6 @@ export class DayService {
           ],
         });
       } catch (e: any) {
-        console.error(`[ensureDay] Error al crear día:`, e.message);
-
         // Search using the same string iso format
         day = await this.dayRepo.findOne({
           where: { user: { id: userId }, date: iso },

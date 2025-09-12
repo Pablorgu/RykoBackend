@@ -90,13 +90,6 @@ export class RecommendationService {
     sMax = 2.5,
     recentlyConsumedDishes?: Map<number, number>,
   ): { dishVector: DishVector; s: number; score: number } | null {
-    console.log(`\n=== RECOMMEND DISH DEBUG ===`);
-    console.log(`Available dishes: ${dishVectors.length}`);
-    console.log(
-      `Recently consumed dishes: ${recentlyConsumedDishes?.size || 0}`,
-    );
-    console.log(`Remaining macros:`, remaining);
-
     let bestDishVector: DishVector | null = null;
     let bestS = 0;
     let bestScore = Infinity;
@@ -121,11 +114,7 @@ export class RecommendationService {
         const diversityPenalty = frequency * 0.2;
         finalScore = scaleResult.score * (1 + diversityPenalty);
         diversityInfo = `Consumed ${frequency} times, penalty: ${diversityPenalty.toFixed(2)}, final score: ${finalScore.toFixed(2)}`;
-        console.log(`🔴 Dish ${dishVector.dishId}: ${diversityInfo}`);
       } else {
-        console.log(
-          `🟢 Dish ${dishVector.dishId}: ${diversityInfo}, original score: ${scaleResult.score.toFixed(2)}`,
-        );
       }
       const scaledProtein = dishVector.macros.protein * scaleResult.s;
       if (finalScore < bestScore && scaledProtein >= 5) {
@@ -133,20 +122,12 @@ export class RecommendationService {
         bestDishVector = dishVector;
         bestS = scaleResult.s;
         bestScore = finalScore;
-        console.log(
-          `⭐ NEW BEST: Dish ${dishVector.dishId} with final score: ${finalScore.toFixed(2)} (scaled protein: ${scaledProtein.toFixed(1)}g)`,
-        );
       }
     }
 
     if (bestDishVector) {
-      console.log(
-        `\n🎯 FINAL RECOMMENDATION: Dish ${bestDishVector.dishId} with score ${bestScore.toFixed(2)}`,
-      );
     } else {
-      console.log(`\n❌ NO RECOMMENDATION: No suitable dish found`);
     }
-    console.log(`=== END RECOMMEND DISH DEBUG ===\n`);
 
     return bestDishVector
       ? { dishVector: bestDishVector, s: bestS, score: bestScore }
@@ -173,9 +154,6 @@ export class RecommendationService {
       (acc, ovr) => {
         const m = byId[ovr.ingredientId];
         if (!m) {
-          console.warn(
-            `Ingredient with ID ${ovr.ingredientId} not found in map`,
-          );
           return acc;
         }
         const factor = ovr.grams / 100;
@@ -272,17 +250,8 @@ export class RecommendationService {
     // Filter dishes according to criteria
     let filteredDishes = dishVectors;
     if (queryDto.exclude && queryDto.exclude.length > 0) {
-      console.log('Excluding dishes:', queryDto.exclude);
-      console.log(
-        'Available dishes before filter:',
-        dishVectors.map((d) => d.dishId),
-      );
       filteredDishes = dishVectors.filter(
         (dish) => !queryDto.exclude!.includes(dish.dishId),
-      );
-      console.log(
-        'Available dishes after filter:',
-        filteredDishes.map((d) => d.dishId),
       );
     }
 
@@ -291,13 +260,6 @@ export class RecommendationService {
       userId,
       date,
       7,
-    );
-    console.log(
-      'Recently consumed dishes for diversity:',
-      Array.from(recentlyConsumedDishes.entries()),
-    );
-    console.log(
-      `Found ${recentlyConsumedDishes.size} recently consumed dishes for user ${userId}`,
     );
 
     // Find the best dish
@@ -383,11 +345,6 @@ export class RecommendationService {
     currentDate: string,
     daysBack: number = 7,
   ): Promise<Map<number, number>> {
-    console.log(`\n=== GETTING RECENTLY CONSUMED DISHES ===`);
-    console.log(
-      `User: ${userId}, Date: ${currentDate}, Days back: ${daysBack}`,
-    );
-
     const endDate = new Date(currentDate);
     const startDate = new Date(endDate);
     startDate.setDate(startDate.getDate() - daysBack);
@@ -395,15 +352,11 @@ export class RecommendationService {
     const startDateStr = startDate.toISOString().split('T')[0];
     const endDateStr = endDate.toISOString().split('T')[0];
 
-    console.log(`Date range: ${startDateStr} to ${endDateStr}`);
-
     // Query to get all dishes consumed in the last N days
     const consumedDishes = await this.mealService.getRecentlyConsumedDishes(
       userId,
       daysBack,
     );
-
-    console.log(`Found ${consumedDishes.length} meals in date range`);
 
     // Count frequency of each dish
     const dishFrequency = new Map<number, number>();
@@ -419,9 +372,6 @@ export class RecommendationService {
         });
       }
     });
-
-    console.log(`Dish frequency map:`, Array.from(dishFrequency.entries()));
-    console.log(`=== END RECENTLY CONSUMED DISHES ===\n`);
 
     return dishFrequency;
   }
