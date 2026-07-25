@@ -9,7 +9,7 @@
 
 REST API for **Ryko**, an intelligent nutrition assistant that tracks what you eat and recommends which of *your own* dishes — and in what portion — best fits the macros you have left for the day.
 
-> 📱 **Mobile app:** [RykoFrontend](https://github.com/Pablorgu/RykoFrontend)
+> **Mobile app:** [RykoFrontend](https://github.com/Pablorgu/RykoFrontend)
 
 ## Table of contents
 
