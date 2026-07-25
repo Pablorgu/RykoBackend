@@ -29,18 +29,18 @@ REST API for **Ryko**, an intelligent nutrition assistant that tracks what you e
 ```mermaid
 flowchart LR
     subgraph Clients
-        APP["📱 Ryko mobile app<br/>(React Native + Expo)"]
-        WEB["🌐 Web build"]
+        APP["Ryko mobile app<br/>(React Native + Expo)"]
+        WEB["Web build"]
     end
 
     subgraph Backend["NestJS API"]
-        AUTH[auth]
-        USER[user]
+        AUTH["auth"]
+        USER["user"]
         DAY["day / meal"]
         DISH["dish / dishFoodItem"]
-        FOOD[foodItem]
-        RECO[recommendation]
-        UP[upload]
+        FOOD["foodItem"]
+        RECO["recommendation"]
+        UP["upload"]
     end
 
     subgraph External["External services"]
@@ -101,7 +101,7 @@ erDiagram
         date date "unique per user"
     }
     MEAL {
-        string type "breakfast | lunch | snack | dinner | appetizers"
+        string type "breakfast, lunch, snack, dinner or appetizers"
     }
     FOOD_ITEM {
         string name
